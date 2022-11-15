@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ NAMESPACE }};
+
+use Cptbadcode\LaravelPager\BasePage;
+use Cptbadcode\LaravelPager\Contracts\IPage;
+
+class {{ CLASS_NAME }} extends BasePage implements IPage
+{
+    protected string $key = '{{ KEY }}';
+
+    public string $uri = '{{ KEY }}';
+
+    public function toResponse($request)
+    {
+        return view('welcome');
+    }
+}

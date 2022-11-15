@@ -1,0 +1,35 @@
+{
+    "name": "cptbadcode/laravel-pager",
+    "description": "Page creator for laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sedov Dmitrii",
+            "email": "sedovDmitry@vk.com"
+        }
+    ],
+    "require": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "Cptbadcode\\LaravelPager\\": "/src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cptbadcode\\LaravelPager\\Tests\\": "tests/",
+            "Database\\Factories\\": "database/factories/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cptbadcode\\LaravelPager\\PageServiceProvider"
+            ],
+            "aliases": {
+                "PageService": "Cptbadcode\\LaravelPager\\Facades\\PageFacade"
+            }
+        }
+    }
+}
