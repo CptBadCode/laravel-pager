@@ -26,10 +26,7 @@
         "laravel": {
             "providers": [
                 "Cptbadcode\\LaravelPager\\PageServiceProvider"
-            ],
-            "aliases": {
-                "PageService": "Cptbadcode\\LaravelPager\\Facades\\PageFacade"
-            }
+            ]
         }
     }
 }

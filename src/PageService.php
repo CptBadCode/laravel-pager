@@ -2,89 +2,92 @@
 
 namespace Cptbadcode\LaravelPager;
 
-use Cptbadcode\LaravelPager\Contracts\IPage;
-use Cptbadcode\LaravelPager\Contracts\IPageLoader;
-use Cptbadcode\LaravelPager\Contracts\IPageRepository;
-use Cptbadcode\LaravelPager\Contracts\Services\IDisableService;
+use Cptbadcode\LaravelPager\Helpers\MenuLoader;
+use Cptbadcode\LaravelPager\Helpers\PageLoader;
+use Cptbadcode\LaravelPager\Services\DisableService;
+use Cptbadcode\LaravelPager\Contracts\{IMenuRepository, IPage, IPageRepository};
 
 class PageService
 {
-    const PAGE_NAMESPACE = 'App\\Pages';
+    const PAGE_NAMESPACE = 'App\\Pages',
+          CACHE_PAGE_KEY = 'pages',
+          CACHE_MENU_KEY = 'menu';
 
-    protected IPageLoader $pageLoader;
+    public static bool
+        $cachedPage = false,
+        $cacheMenu = false;
 
-    protected IDisableService $disableService;
-
-    protected IPageRepository $pageRepository;
-
-    public function __construct(IPageLoader $pageLoader, IDisableService $disableService, IPageRepository $pageRepository)
+    public static function loadPages(): void
     {
-        $this->pageLoader = $pageLoader;
-        $this->disableService = $disableService;
-        $this->pageRepository = $pageRepository;
+        PageLoader::load();
     }
 
-    public function loadPages(): void
+    public static function loadMenu(): void
     {
-        $this->pageLoader->loadPages();
-        $loaded = $this->pageLoader->getPages();
-        foreach ($loaded as $className) {
-            $this->pageRepository->addPage($className);
-        }
+        MenuLoader::load();
     }
 
-    public function loadMenu()
+    public static function repository(): IPageRepository
     {
-        $this->pageLoader->loadMenu();
+        return app(IPageRepository::class);
     }
 
-    public function getMenu(): array
+    public static function menu(): IMenuRepository
     {
-        return $this->pageLoader->getMenu();
+        return app(IMenuRepository::class);
     }
 
-    public function repository(): IPageRepository
+    public static function enablePage(string|IPage ...$pages): void
     {
-        return $this->pageRepository;
+        array_map(fn($page) => DisableService::enable($page), $pages);
     }
 
-    public function enablePage(string|IPage ...$pages): void
+    public static function disablePage(string|IPage ...$pages): void
     {
-        array_map(fn($page) => $this->disableService->enable($page), $pages);
+        array_map(fn($page) => DisableService::disable($page), $pages);
     }
 
-    public function disablePage(string|IPage ...$pages): void
-    {
-        array_map(fn($page) => $this->disableService->disable($page), $pages);
-    }
-
-    public function attachMiddleware(array $middleware, string|IPage ...$pages): void
+    public static function applyMiddleware(array $middleware, string|IPage ...$pages): void
     {
         foreach ($pages as $page) {
-            $page = $this->pageRepository->getPageOrFail($page);
+            $page = static::repository()->getPageOrFail($page);
             $page->setMiddleware($middleware);
         }
     }
 
-    public function attachMiddlewareAll(array $middleware): void
+    public static function applyMiddlewareAll(array $middleware): void
     {
-        foreach ($this->pageRepository->getPages() as $page) {
+        foreach (static::repository()->getPages() as $page) {
             $page->setMiddleware($middleware);
         }
-    }
-
-    public static function pageLoaderUsing(string $concrete): void
-    {
-        app()->singleton(IPageLoader::class, $concrete);
-    }
-
-    public static function pageDisablerUsing(string $concrete): void
-    {
-        app()->singleton(IDisableService::class, $concrete);
     }
 
     public static function pageRepositoryUsing(string $concrete): void
     {
         app()->singleton(IPageRepository::class, $concrete);
+    }
+
+    public static function menuRepositoryUsing(string $concrete): void
+    {
+        app()->singleton(IMenuRepository::class, $concrete);
+    }
+
+    public static function getRootPath(): string
+    {
+        return base_path(self::PAGE_NAMESPACE);
+    }
+
+    public static function enableCacheMenu(): static
+    {
+        self::$cacheMenu = true;
+
+        return new static;
+    }
+
+    public static function enableCachePage(): static
+    {
+        self::$cachedPage = true;
+
+        return new static;
     }
 }

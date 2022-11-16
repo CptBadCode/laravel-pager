@@ -2,10 +2,8 @@
 namespace Cptbadcode\LaravelPager;
 
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;
-use Cptbadcode\LaravelPager\Facades\PageFacade;
-use Cptbadcode\LaravelPager\Helpers\PageLoader;
+use Cptbadcode\LaravelPager\Repositories\MenuRepository;
 use Cptbadcode\LaravelPager\Repositories\PageRepository;
-use Cptbadcode\LaravelPager\Services\DisableService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,21 +13,15 @@ class PageServiceProvider extends ServiceProvider
     {
         $this->configureCommands();
         $this->configureHelpers();
-
-        $this->app->singleton('page-service', PageService::class);
     }
 
     public function boot()
     {
-        PageService::pageLoaderUsing(PageLoader::class);
-        PageService::pageDisablerUsing(DisableService::class);
         PageService::pageRepositoryUsing(PageRepository::class);
+        PageService::menuRepositoryUsing(MenuRepository::class);
 
-        PageFacade::loadPages();
-
-        PageFacade::attachMiddlewareAll(['web']);
-
-        PageFacade::loadMenu();
+        PageService::loadPages();
+        PageService::applyMiddlewareAll(['web']);
 
         $this->configureRoutes();
     }

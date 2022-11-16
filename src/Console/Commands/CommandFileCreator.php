@@ -4,6 +4,7 @@ namespace Cptbadcode\LaravelPager\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Pluralizer;
 use Illuminate\Support\Str;
 
@@ -32,6 +33,7 @@ trait CommandFileCreator
         if (!$this->files->exists($path)) {
             $this->files->put($path, $contents);
             $this->info("File : {$path} created");
+
             return Command::SUCCESS;
         } else {
             $this->warn("File : {$path} already exits");

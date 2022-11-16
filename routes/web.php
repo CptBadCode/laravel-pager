@@ -1,10 +1,10 @@
 <?php
 
-use \Cptbadcode\LaravelPager\Facades\PageFacade;
+use Cptbadcode\LaravelPager\PageService;
 use Cptbadcode\LaravelPager\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-$pages = PageFacade::repository()->getPages();
+$pages = PageService::repository()->getPages();
 
 foreach ($pages as $page) {
     Route::get($page->uri, PageController::class)

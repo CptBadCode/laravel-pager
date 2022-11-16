@@ -5,10 +5,17 @@ namespace Cptbadcode\LaravelPager\Repositories;
 use Cptbadcode\LaravelPager\BasePage;
 use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\Contracts\IPageRepository;
+use Cptbadcode\LaravelPager\PageService;
+use Illuminate\Support\Facades\Cache;
 
 class PageRepository implements IPageRepository
 {
     protected array $pages = [];
+
+    public function __construct()
+    {
+        $this->pages = Cache::get(PageService::CACHE_PAGE_KEY) ?? [];
+    }
 
     public function getPages(): array
     {
@@ -32,10 +39,21 @@ class PageRepository implements IPageRepository
         if ($this->isPage($className)) {
             $page = new $className;
             $this->pages[$page->getKey()] = $page;
+
+            if (PageService::$cachedPage)
+                Cache::forever(PageService::CACHE_MENU_KEY, $this->pages);
+
             return true;
         }
 
         return false;
+    }
+
+    public function addPages(array $pages): void
+    {
+        foreach ($pages as $page) {
+            $this->addPage($page);
+        }
     }
 
     protected function isPage(string $className): bool
