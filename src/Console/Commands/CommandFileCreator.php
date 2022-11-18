@@ -4,7 +4,6 @@ namespace Cptbadcode\LaravelPager\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Pluralizer;
 use Illuminate\Support\Str;
 
@@ -67,7 +66,7 @@ trait CommandFileCreator
         ));
         $className = array_pop($classNamePart);
         return [
-            'NAMESPACE'         => $this->fileNamespace.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $classNamePart),
+            'NAMESPACE'         => implode(DIRECTORY_SEPARATOR, array_merge([$this->fileNamespace], $classNamePart)),
             'CLASS_NAME'        => $className,
             'KEY'               => Str::snake($className)
         ];

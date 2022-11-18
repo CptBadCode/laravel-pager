@@ -17,6 +17,8 @@ class PageService
         $cachedPage = false,
         $cacheMenu = false;
 
+    public static array $globalComponents = [];
+
     public static function loadPages(): void
     {
         PageLoader::load();
@@ -87,6 +89,13 @@ class PageService
     public static function enableCachePage(): static
     {
         self::$cachedPage = true;
+
+        return new static;
+    }
+
+    public static function addGlobalComponent(string $tag): static
+    {
+        self::$globalComponents[] = $tag;
 
         return new static;
     }
