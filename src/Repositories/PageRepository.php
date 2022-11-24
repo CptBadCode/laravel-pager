@@ -49,7 +49,7 @@ class PageRepository implements IPageRepository
             $this->pages[$page->getKey()] = $page;
 
             if (PageService::$cachedPage)
-                Cache::forever(PageService::CACHE_MENU_KEY, $this->pages);
+                Cache::forever(PageService::CACHE_PAGE_KEY, $this->pages);
 
             return true;
         }
