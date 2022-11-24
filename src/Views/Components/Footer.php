@@ -2,6 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Views\Components;
 
+use Cptbadcode\LaravelPager\PageService;
 use Illuminate\View\Component;
 
 class Footer extends Component
@@ -20,6 +21,6 @@ class Footer extends Component
      */
     public function render()
     {
-        return view('laravel-pager::components.'.$this->page['footer_layout']);
+        return view(($this->page['footer_layout'] ?? PageService::DEFAULT_FOOTER_COMPONENT));
     }
 }

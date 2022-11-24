@@ -2,6 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Views\Components;
 
+use Cptbadcode\LaravelPager\PageService;
 use Illuminate\View\Component;
 
 class Body extends Component
@@ -20,6 +21,6 @@ class Body extends Component
      */
     public function render()
     {
-        return view('laravel-pager::components.'.$this->page['body_layout']);
+        return view(($this->page['body_layout'] ?? PageService::DEFAULT_BODY_COMPONENT));
     }
 }

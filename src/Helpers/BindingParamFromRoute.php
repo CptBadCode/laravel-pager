@@ -21,7 +21,7 @@ class BindingParamFromRoute extends \Illuminate\Routing\ImplicitRouteBinding
         $parameters = $route->parameters();
 
         $route = static::resolveBackedEnumsForRoute($route, $parameters);
-        
+
         foreach (self::$params as $parameter) {
             if (! $parameterName = static::getParameterName($parameter->getName(), $parameters)) {
                 continue;

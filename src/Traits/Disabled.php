@@ -16,13 +16,15 @@ trait Disabled
         $this->disabled = $value;
     }
 
-    public function disable(): void
+    public function disable(): self
     {
         $this->setDisable(true);
+        return $this;
     }
 
-    public function enable(): void
+    public function enable(): self
     {
         $this->setDisable(false);
+        return $this;
     }
 }

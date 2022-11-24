@@ -2,6 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Views\Components;
 
+use Cptbadcode\LaravelPager\PageService;
 use Illuminate\View\Component;
 
 class Header extends Component
@@ -20,6 +21,6 @@ class Header extends Component
      */
     public function render()
     {
-        return view('laravel-pager::components.'.$this->page['header_layout']);
+        return view(($this->page['header_layout'] ?? PageService::DEFAULT_HEADER_COMPONENT));
     }
 }

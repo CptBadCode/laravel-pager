@@ -1,6 +1,8 @@
 <?php
 namespace Cptbadcode\LaravelPager;
 
+use Cptbadcode\LaravelPager\Actions\MenuRemover;
+use Cptbadcode\LaravelPager\Actions\MenuUpdater;
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;
 use Cptbadcode\LaravelPager\Repositories\MenuRepository;
 use Cptbadcode\LaravelPager\Repositories\PageRepository;
@@ -27,6 +29,10 @@ class PageServiceProvider extends ServiceProvider
 
         PageService::pageRepositoryUsing(PageRepository::class);
         PageService::menuRepositoryUsing(MenuRepository::class);
+        PageService::menuUpdaterUsing(MenuUpdater::class);
+        PageService::menuRemoverUsing(MenuRemover::class);
+
+
 
         PageService::loadPages();
         PageService::applyMiddlewareAll(['web']);
@@ -62,7 +68,7 @@ class PageServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/laravel-pager'),
+            __DIR__.'/../resources/views/components/layouts' => resource_path('views/vendor/laravel-pager'),
         ], 'laravel-pager-views');
     }
 

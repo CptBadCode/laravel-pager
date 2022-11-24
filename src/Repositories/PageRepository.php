@@ -34,9 +34,17 @@ class PageRepository implements IPageRepository
         return $page;
     }
 
+    public function getPagesByKeys(string ...$keys): array
+    {
+        return array_reduce($keys, function($res, $key) {
+            $res[] = $this->getPage($key);
+            return $res;
+        }, []);
+    }
+
     public function addPage(string $className): bool
     {
-        if ($this->isPage($className)) {
+        if (PageService::isPage($className)) {
             $page = new $className;
             $this->pages[$page->getKey()] = $page;
 
@@ -54,10 +62,5 @@ class PageRepository implements IPageRepository
         foreach ($pages as $page) {
             $this->addPage($page);
         }
-    }
-
-    protected function isPage(string $className): bool
-    {
-        return class_exists($className) && is_subclass_of($className, BasePage::class);
     }
 }

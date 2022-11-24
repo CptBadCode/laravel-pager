@@ -7,7 +7,7 @@ use Cptbadcode\LaravelPager\Contracts\IPage;
 
 class {{ CLASS_NAME }} extends BasePage implements IPage
 {
-    protected string $key = '{{ KEY }}';
+    public static string $key = '{{ KEY }}';
 
     public string $uri = '{{ KEY }}';
 

@@ -12,7 +12,7 @@ class MenuLoader implements IMenuLoader
     {
         $menuRepository = app(IMenuRepository::class);
         if (!Cache::has(PageService::CACHE_MENU_KEY)) {
-            $menuRepository->updateMenu(
+            $menuRepository->setMenu(
                 MenuGenerator::generateMenu(PageService::getRootPath())
             );
         }
