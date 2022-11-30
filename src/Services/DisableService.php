@@ -8,6 +8,10 @@ use Cptbadcode\LaravelPager\PageService;
 
 class DisableService implements IDisableService
 {
+    /**
+     * @param string|IPage $page
+     * @return IPage
+     */
     public static function enable(string|IPage $page): IPage
     {
         return (PageService::isPage($page))
@@ -15,13 +19,21 @@ class DisableService implements IDisableService
             : static::findAndEnable($page);
     }
 
-    public static function disable(string|Ipage $page): IPage
+    /**
+     * @param string|IPage $page
+     * @return IPage
+     */
+    public static function disable(string|IPage $page): IPage
     {
         return (PageService::isPage($page))
             ? $page->disable()
             : static::findAndDisable($page);
     }
 
+    /**
+     * @param string $key
+     * @return IPage
+     */
     public static function findAndDisable(string $key): IPage
     {
         $page = PageService::repository()->getPageOrFail($key);
@@ -29,6 +41,10 @@ class DisableService implements IDisableService
         return $page;
     }
 
+    /**
+     * @param string $key
+     * @return IPage
+     */
     public static function findAndEnable(string $key): IPage
     {
         $page = PageService::repository()->getPageOrFail($key);

@@ -2,7 +2,9 @@
 
 namespace Cptbadcode\LaravelPager;
 
-use Cptbadcode\LaravelPager\Helpers\MenuGenerator;
+use Cptbadcode\LaravelPager\Contracts\IPage;
+use Cptbadcode\LaravelPager\Menu\MenuItem;
+use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Traits\Disabled;
 use \Cptbadcode\LaravelPager\Contracts\Disabled as IDisabled;
 use Illuminate\Container\Container;
@@ -12,7 +14,7 @@ use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
-abstract class BasePage implements Responsable, IDisabled
+abstract class BasePage implements Responsable, IDisabled, IPage
 {
     use Disabled;
 
@@ -20,9 +22,7 @@ abstract class BasePage implements Responsable, IDisabled
         $key;
 
     protected string
-        $title = 'Base Page Title',
-        $description = 'this is description page',
-        $charset = 'utf-8';
+        $title = 'Base Page Title';
 
     protected string
         $body = PageService::DEFAULT_BODY_COMPONENT,
@@ -30,12 +30,15 @@ abstract class BasePage implements Responsable, IDisabled
         $footer = PageService::DEFAULT_FOOTER_COMPONENT;
 
     protected array
-        $styles = ['base.css'],
-        $scripts = [],
-        $footer_scripts = [];
+        $styles = ['resources/css/app.css'],
+        $scripts = ['resources/js/app.js'],
+        $footer_scripts = [],
+        $publicScripts = [];
 
-    protected array $additionMeta = [
-        ['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1']
+    protected array $meta = [
+        ['name' => 'charset', 'content' => 'utf-8'],
+        ['name' => 'description', 'content' => 'this is description page'],
+        ['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'],
     ];
 
     protected array $middleware = [];
@@ -46,7 +49,7 @@ abstract class BasePage implements Responsable, IDisabled
 
     protected bool $isCanAddToMenu = true;
 
-    protected array $action = [];
+    protected string|null $action = null;
 
     protected array $actionResult = [];
 
@@ -80,11 +83,6 @@ abstract class BasePage implements Responsable, IDisabled
         return $this->isCanAddToMenu;
     }
 
-    public function removeFromMenu()
-    {
-        $this->isCanAddToMenu = false;
-    }
-
     public function getTitle(): string
     {
         return $this->lang ? __($this->getLandKey()) : $this->title;
@@ -102,30 +100,33 @@ abstract class BasePage implements Responsable, IDisabled
 
     public function hasActionToCall(): bool
     {
-        return count($this->action) === 2;
+        return !!$this->action;
     }
 
-    public function toArray(): array
+    public function forMenu(): MenuItem
     {
-        $menuTemplate = MenuGenerator::getMenuTemplate();
-        $menuTemplate[MenuGenerator::$menuTitleKey] = $this->title;
-        $menuTemplate[MenuGenerator::$menuUriKey] = $this->uri;
-        $menuTemplate[MenuGenerator::$menuDisableKey] = $this->disabled;
-        return $menuTemplate;
+        return new MenuItem(
+            title: $this->title,
+            uri: $this->uri,
+            key: $this->getKey(),
+            isDisabled: $this->disabled
+        );
     }
 
     public function __toString(): string
     {
-        return json_encode($this->toArray());
+        return json_encode($this->forMenu());
     }
 
     public function toResponse($request)
     {
         return view(PageService::ROOT_VIEW)->with(
-            array_merge(
-                $this->sharedData(),
-                $this->renderData($request)
-            )
+            [
+                'page' => array_merge(
+                    $this->sharedData(),
+                    $this->renderData($request)
+                )
+            ]
         );
     }
 
@@ -134,25 +135,22 @@ abstract class BasePage implements Responsable, IDisabled
         return PageService::LANG_FILE.'.'.static::$key;
     }
 
-    protected function sharedData(): array
+    private function sharedData(): array
     {
         return [
-            'page' => [
-                'styles' => $this->styles,
-                'scripts' => $this->scripts,
-                'footer_scripts' => $this->footer_scripts,
-                'meta' => $this->additionMeta,
-                'title' => $this->title,
-                'charset' => $this->charset,
-                'description' => $this->description,
-                'lang' => App::getLocale(),
-                'header_layout' => $this->getHeaderLayout(),
-                'footer_layout' => $this->getFooterLayout(),
-                'body_layout' => $this->body,
-                'is_auth' => auth()->check(),
-                'user' => auth()->user(),
-                'uri' => $this->uri,
-            ]
+            'styles' => $this->styles,
+            'scripts' => $this->scripts,
+            'public_scripts' => $this->publicScripts,
+            'footer_scripts' => $this->footer_scripts,
+            'meta' => $this->meta,
+            'title' => $this->title,
+            'lang' => App::getLocale(),
+            'header_layout' => $this->getHeaderLayout(),
+            'footer_layout' => $this->getFooterLayout(),
+            'body_layout' => $this->body,
+            'is_auth' => auth()->check(),
+            'user' => auth()->user(),
+            'menu' => MenuService::repository()->getMenu()->toArray()
         ];
     }
 
@@ -166,11 +164,10 @@ abstract class BasePage implements Responsable, IDisabled
     public function callAction(Container $container, $route): mixed
     {
         if ($this->hasActionToCall()) {
-            [$class, $method] = $this->action;
-            $controller = $container->make(ltrim($class, '\\'));
+            $controller = $container->make(ltrim($this->action, '\\'));
             $dispatcher = new ControllerDispatcher($container);
-            resolve_model_params_for_route($class, $method, $route);
-            $this->actionResult = $dispatcher->dispatch($route, $controller, $method);
+            resolve_model_params_for_route($this->action, 'handle', $route);
+            $this->actionResult = $dispatcher->dispatch($route, $controller, 'handle');
             return $this->actionResult;
         }
 

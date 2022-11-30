@@ -1,17 +1,13 @@
 <?php
 namespace Cptbadcode\LaravelPager;
 
-use Cptbadcode\LaravelPager\Actions\MenuRemover;
-use Cptbadcode\LaravelPager\Actions\MenuUpdater;
+
+use Cptbadcode\LaravelPager\Services\MenuService;
+use Cptbadcode\LaravelPager\Actions\{MenuRemover, MenuUpdater};
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;
-use Cptbadcode\LaravelPager\Repositories\MenuRepository;
-use Cptbadcode\LaravelPager\Repositories\PageRepository;
-use Cptbadcode\LaravelPager\Views\Components\Body;
-use Cptbadcode\LaravelPager\Views\Components\Footer;
-use Cptbadcode\LaravelPager\Views\Components\Header;
-use Cptbadcode\LaravelPager\Views\Components\Layout;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Route;
+use Cptbadcode\LaravelPager\Repositories\{MenuRepository, PageRepository};
+use Cptbadcode\LaravelPager\Views\Components\{Body, Footer, Header, Layout};
+use Illuminate\Support\Facades\{Blade, Route};
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 
@@ -21,6 +17,7 @@ class PageServiceProvider extends ServiceProvider
     {
         $this->configureCommands();
         $this->configureHelpers();
+        $this->configureBlade();
     }
 
     public function boot()
@@ -28,11 +25,9 @@ class PageServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-pager');
 
         PageService::pageRepositoryUsing(PageRepository::class);
-        PageService::menuRepositoryUsing(MenuRepository::class);
-        PageService::menuUpdaterUsing(MenuUpdater::class);
-        PageService::menuRemoverUsing(MenuRemover::class);
-
-
+        MenuService::menuRepositoryUsing(MenuRepository::class);
+        MenuService::menuUpdaterUsing(MenuUpdater::class);
+        MenuService::menuRemoverUsing(MenuRemover::class);
 
         PageService::loadPages();
         PageService::applyMiddlewareAll(['web']);
@@ -40,6 +35,17 @@ class PageServiceProvider extends ServiceProvider
         $this->configureRoutes();
         $this->configurePublishing();
         $this->configureComponents();
+    }
+
+    private function configureBlade()
+    {
+        Blade::directive('meta', function ($attributes) {
+            return "<?php echo app(\Cptbadcode\LaravelPager\Helpers\TagGenerator::class)->generate('meta', $attributes); ?>";
+        });
+
+        Blade::directive('script', function ($scripts) {
+            return "<?php echo app(\Cptbadcode\LaravelPager\Helpers\ScriptTagGenerator::class)->generate($scripts); ?>";
+        });
     }
 
     private function configureCommands()
@@ -81,7 +87,7 @@ class PageServiceProvider extends ServiceProvider
             $dynamicComponents = ['header' => Header::class, 'body' => Body::class, 'footer' => Footer::class];
             foreach ($dynamicComponents as $tag => $component) {
                 Blade::component($tag, $component);
-                PageService::addGlobalComponent($tag);
+                PageService::addDynamicComponent($tag);
             }
         });
     }

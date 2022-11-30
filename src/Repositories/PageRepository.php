@@ -2,7 +2,6 @@
 
 namespace Cptbadcode\LaravelPager\Repositories;
 
-use Cptbadcode\LaravelPager\BasePage;
 use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\Contracts\IPageRepository;
 use Cptbadcode\LaravelPager\PageService;

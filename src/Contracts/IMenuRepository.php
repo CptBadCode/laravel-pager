@@ -4,9 +4,7 @@ namespace Cptbadcode\LaravelPager\Contracts;
 
 interface IMenuRepository
 {
-    public function getMenu(): array;
-    public function setMenu(array $menu): void;
-    public function updateMenuByPage(IPage $page);
-    public function updateMenu();
-    public function removeFromMenu(IPage ...$pages);
+    public function getAll(): array;
+    public function find(string $key): IMenu;
+    public function addOrUpdate(string $key, IMenu $menu): IMenu;
 }

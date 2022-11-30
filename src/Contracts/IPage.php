@@ -2,6 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Contracts;
 
+use Cptbadcode\LaravelPager\Menu\MenuItem;
 use Illuminate\Container\Container;
 
 interface IPage
@@ -12,12 +13,11 @@ interface IPage
     public function getTitle(): string;
     public function getMiddleware(): array;
     public function setMiddleware(array $middleware = []);
-    public function toArray(): array;
+    public function forMenu(): MenuItem;
     public function renderData($request): array;
     public function callAction(Container $container, $route): mixed;
     public function hasActionToCall(): bool;
     public function canAddToMenu(): bool;
-    public function removeFromMenu();
     public function getFooterLayout(): string;
     public function getHeaderLayout(): string;
 }

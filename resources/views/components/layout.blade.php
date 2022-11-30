@@ -7,18 +7,23 @@
 
     <title>{{ $page['title'] ?? config('app.name', 'Laravel') }}</title>
 
-    <meta name="description" content="{{ $page['description'] }}">
+    @meta($page['meta'])
 
-    @foreach($page['meta'] as $tag)
-        <meta name="{{$tag['name']}}" content="{{ $tag['content'] }}">
-    @endforeach
+    @if(count($page['styles']))
+        @vite($page['styles'])
+    @endif
 
-    @stack('styles')
-    @stack('scripts')
+    @if(count($page['scripts']))
+        @vite($page['scripts'])
+    @endif
+
 </head>
     <body class="antialiased">
         {{ $slot }}
 
-        @stack('footer_scripts')
+        @if(count($page['footer_scripts']))
+            @vite($page['footer_scripts'])
+        @endif
+        @script($page['public_scripts'])
     </body>
 </html>

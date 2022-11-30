@@ -2,23 +2,45 @@
 
 namespace Cptbadcode\LaravelPager\Actions;
 
-use Cptbadcode\LaravelPager\Contracts\{IPage, IMenuRemover};
+use Cptbadcode\LaravelPager\Services\MenuService;
+use Cptbadcode\LaravelPager\Contracts\{IPage, IMenuRemover, Menu\IMenuDirectory, Menu\IMenuItem};
 
-class MenuRemover extends MenuAction implements IMenuRemover
+class MenuRemover implements IMenuRemover
 {
+    /**
+     * @param array $menu
+     * @param IPage ...$pages
+     * @return array
+     */
     public function remove(array $menu, IPage ...$pages): array
     {
-        $this->doRecursive($menu, ...$pages);
-        return $menu;
+        $menu = array_filter($menu, function ($item) use ($pages) {
+            $find = MenuService::pagesExistsInMenu($item, ...$pages);
+            if ($find) return false;
+            else if ($item instanceof IMenuDirectory) {
+                $this->removeRecursive($item, ...$pages);
+                if ($item->isEmpty()) return false;
+            }
+            return true;
+        });
+        return array_values($menu);
     }
 
-    protected function doRecursive(array &$menu, IPage ...$pages): void
+    /**
+     * @param IMenuDirectory|IMenuItem $item
+     * @param IPage ...$pages
+     * @return void
+     */
+    protected function removeRecursive(IMenuDirectory|IMenuItem $item, IPage ...$pages): void
     {
-        foreach ($menu as $pageKey => &$item) {
-            if (array_some(fn($page) => $page->getKey() === $pageKey, $pages)) unset($menu[$pageKey]);
-            else if ($this->isDir($item))  {
-                $this->doRecursive($item, ...$pages);
-                if (!count($item)) unset($menu[$pageKey]);
+        foreach ($item->getItems() as $current) {
+            if ($current instanceof IMenuDirectory) {
+                $this->removeRecursive($current, ...$pages);
+                if ($current->isEmpty()) $item->remove($current);
+            }
+            else {
+                $find = MenuService::pagesExistsInMenu($current, ...$pages);
+                if ($find) $item->remove($current);
             }
         }
     }

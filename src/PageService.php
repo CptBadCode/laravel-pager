@@ -2,9 +2,10 @@
 
 namespace Cptbadcode\LaravelPager;
 
-use Cptbadcode\LaravelPager\Helpers\{MenuLoader, PageLoader};
+use Cptbadcode\LaravelPager\Services\MenuService;
+use Cptbadcode\LaravelPager\Helpers\PageLoader;
 use Cptbadcode\LaravelPager\Services\DisableService;
-use Cptbadcode\LaravelPager\Contracts\{IMenuRemover, IMenuRepository, IMenuUpdater, IPage, IPageRepository};
+use Cptbadcode\LaravelPager\Contracts\{IPage, IPageRepository};
 
 class PageService
 {
@@ -12,18 +13,16 @@ class PageService
         PAGE_NAMESPACE = 'App\\Pages',
         LANG_FILE = 'page',
         CACHE_PAGE_KEY = 'pages',
-        CACHE_MENU_KEY = 'menu',
         ROOT_VIEW = 'laravel-pager::app',
         DEFAULT_HEADER_COMPONENT = 'laravel-pager::components.layouts.header',
         DEFAULT_BODY_COMPONENT = 'laravel-pager::components.layouts.body',
         DEFAULT_FOOTER_COMPONENT = 'laravel-pager::components.layouts.footer';
 
     public static bool
-        $cachedPage = false,
-        $cacheMenu = false;
+        $cachedPage = false;
 
     public static array
-        $globalComponents = [];
+        $dynamicComponents = [];
 
     protected static array
         $headerComponents = [],
@@ -46,16 +45,6 @@ class PageService
     }
 
     /**
-     * Load menu from page filesystem
-     * @note If you enable cache. Clear this
-     * @return void
-     */
-    public static function loadMenu(): void
-    {
-        MenuLoader::load();
-    }
-
-    /**
      * get page repository
      * @return IPageRepository
      */
@@ -65,18 +54,16 @@ class PageService
     }
 
     /**
-     * get menu repository
-     * @return IMenuRepository
+     * @param string $key
+     * @param string|IPage ...$pages
+     * @return void
      */
-    public static function menu(): IMenuRepository
-    {
-        return app(IMenuRepository::class);
-    }
-
-    public static function removeFromMenu(string|IPage ...$pages): void
+    public static function removeFromMenu(string $key, string|IPage ...$pages): void
     {
         $pages = self::convertKeysToPage(...$pages);
-        self::menu()->removeFromMenu(...$pages);
+        MenuService::repository()
+            ->find($key)
+            ->removeFromMenu(...$pages);
     }
 
     /**
@@ -90,7 +77,7 @@ class PageService
             DisableService::enable($page);
         }
 
-        self::menu()->updateMenu();
+        MenuService::updateMenuWhereHas(...$pages);
     }
 
     /**
@@ -104,7 +91,7 @@ class PageService
             DisableService::disable($page);
         }
 
-        self::menu()->updateMenu();
+        MenuService::updateMenuWhereHas(...$pages);
     }
 
     /**
@@ -133,22 +120,12 @@ class PageService
 
     /**
      * class is page object
-     * @param string $className
+     * @param string|IPage $class
      * @return bool
      */
-    public static function isPage(string $className): bool
+    public static function isPage(string|IPage $class): bool
     {
-        return class_exists($className) && is_subclass_of($className, BasePage::class);
-    }
-
-    /**
-     * @return static
-     */
-    public static function enableCacheMenu(): static
-    {
-        self::$cacheMenu = true;
-
-        return new static;
+        return (class_exists($class) && is_subclass_of($class, BasePage::class)) || $class instanceof IPage;
     }
 
     public static function enableCachePage(): static
@@ -163,9 +140,9 @@ class PageService
      * @param string $tag
      * @return static
      */
-    public static function addGlobalComponent(string $tag): static
+    public static function addDynamicComponent(string $tag): static
     {
-        self::$globalComponents[] = $tag;
+        self::$dynamicComponents[] = $tag;
 
         return new static;
     }
@@ -209,21 +186,6 @@ class PageService
     public static function pageRepositoryUsing(string $concrete): void
     {
         app()->singleton(IPageRepository::class, $concrete);
-    }
-
-    public static function menuRepositoryUsing(string $concrete): void
-    {
-        app()->singleton(IMenuRepository::class, $concrete);
-    }
-
-    public static function menuUpdaterUsing(string $concrete): void
-    {
-        app()->singleton(IMenuUpdater::class, $concrete);
-    }
-
-    public static function menuRemoverUsing(string $concrete): void
-    {
-        app()->singleton(IMenuRemover::class, $concrete);
     }
 
     private static function convertKeysToPage(string|IPage ...$pages)

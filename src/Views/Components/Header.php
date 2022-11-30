@@ -7,7 +7,7 @@ use Illuminate\View\Component;
 
 class Header extends Component
 {
-    protected array $page = [];
+    public array $page = [];
 
     public function __construct(array $page)
     {

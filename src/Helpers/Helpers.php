@@ -1,6 +1,7 @@
 <?php
 
 use Cptbadcode\LaravelPager\Helpers\BindingParamFromRoute;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 if (!function_exists('get_class_from_file')) {
@@ -55,5 +56,23 @@ if (!function_exists('array_every')) {
             }
         }
         return true;
+    }
+}
+
+if (!function_exists('parse_attributes')) {
+    /**
+     * Parse the attributes into key="value" strings.
+     *
+     * @param $attributes
+     * @return string
+     */
+    function parse_attributes($attributes): string
+    {
+        return implode('', Collection::make($attributes)
+            ->reject(fn ($value, $key) => in_array($value, [false, null], true))
+            ->flatMap(fn ($value, $key) => $value === true ? [$key] : [$key => $value])
+            ->map(fn ($value, $key) => is_int($key) ? $value : $key.'="'.$value.'"')
+            ->values()
+            ->all());
     }
 }

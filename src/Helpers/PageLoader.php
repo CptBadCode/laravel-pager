@@ -3,7 +3,7 @@
 namespace Cptbadcode\LaravelPager\Helpers;
 
 use Illuminate\Support\Facades\Cache;
-use Cptbadcode\LaravelPager\{PageService};
+use Cptbadcode\LaravelPager\PageService;
 use Cptbadcode\LaravelPager\Contracts\{IPageLoader, IPageRepository};
 use Illuminate\Support\Facades\File;
 

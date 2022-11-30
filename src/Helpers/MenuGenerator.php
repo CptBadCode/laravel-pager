@@ -2,67 +2,46 @@
 
 namespace Cptbadcode\LaravelPager\Helpers;
 
+use Cptbadcode\LaravelPager\Menu\{Menu, MenuDirectory};
 use Cptbadcode\LaravelPager\PageService;
 
 class MenuGenerator
 {
-    public static string $menuTitleKey = 'title',
-                         $menuUriKey = 'uri',
-                         $menuDisableKey = 'is_disabled';
-
-    public static function getMenuTemplate(): array
-    {
-        return [
-            self::$menuTitleKey => '',
-            self::$menuUriKey => '/',
-            self::$menuDisableKey => false
-        ];
-    }
-
-    public static function generateMenu(string $path): array
+    public static function generateMenu(string $path): Menu
     {
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path),
             \RecursiveIteratorIterator::CHILD_FIRST
         );
-        $menu = [];
+        $menu = new Menu([]);
         foreach ($iterator as $splFileInfo) {
             if ($iterator->isDot()) continue;
 
             if ($splFileInfo->isDir()) {
-                $path = [$splFileInfo->getFilename() => []];
+                $title = $splFileInfo->getFilename();
+                $path = new MenuDirectory($title, $title);
             }
             else {
                 $page = new (get_class_from_file($splFileInfo));
                 $page = PageService::repository()->getPage($page->getKey()) ?? $page;
                 if (!$page->canAddToMenu()) continue;
-                $path = [$page->getKey() => $page->toArray()];
+                $path = $page->forMenu();
             }
 
             for ($depth = $iterator->getDepth() - 1; $depth >= 0; $depth--) {
-                if (!self::checkPath($path)) continue;
-                $path = array($iterator->getSubIterator($depth)->current()->getFilename() => $path);
+                $titleDir = $iterator->getSubIterator($depth)->current()->getFilename();
+                $dir = $menu->find($titleDir);
+                if ($dir) {
+                    if ($menu->find($path->key)) continue;
+                    $dir->addItem($path);
+
+                }
+                else {
+                    $path = new MenuDirectory($titleDir, $titleDir, [$path]);
+                }
             }
-            if (!self::checkPath($path)) continue;
-            $menu = array_merge_recursive($menu, $path);
+            if(!$menu->find($path->key)) $menu->add($path);
         }
-
         return $menu;
-    }
-
-    /**
-     * Если папка пустая, то удалить из результатов
-     * @param array $path
-     * @return bool
-     */
-    private static function checkPath(array &$path): bool
-    {
-        $k = key($path);
-        if (!isset($path[$k])) return false;
-        if (!count($path[$k])) {
-            unset($path[$k]);
-            return false;
-        }
-        return true;
     }
 }

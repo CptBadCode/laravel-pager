@@ -2,34 +2,67 @@
 
 namespace Cptbadcode\LaravelPager\Actions;
 
-use Cptbadcode\LaravelPager\Contracts\IMenuUpdater;
-use Cptbadcode\LaravelPager\Contracts\IPage;
+use Cptbadcode\LaravelPager\Contracts\{IPage, IMenuUpdater};;
+use Cptbadcode\LaravelPager\Contracts\Menu\IMenuDirectory;
 use Cptbadcode\LaravelPager\PageService;
+use Cptbadcode\LaravelPager\Services\MenuService;
 
-class MenuUpdater extends MenuAction implements IMenuUpdater
+class MenuUpdater implements IMenuUpdater
 {
+    /**
+     * @param array $menu
+     * @return array
+     */
     public function updateAll(array $menu): array
     {
-        $pages = PageService::repository()->getPages();
+        return $this->updateByPages($menu, ...PageService::repository()->getPages());
+    }
 
-        $this->doRecursive($menu, ...$pages);
+    /**
+     * @param array $menu
+     * @param IPage ...$pages
+     * @return array
+     */
+    public function updateByPages(array $menu, IPage ...$pages): array
+    {
+        foreach ($pages as $page) {
+            $menu = $this->updateByPage($menu, $page);
+        }
+
         return $menu;
     }
 
+    /**
+     * @param array $menu
+     * @param IPage $page
+     * @return array
+     */
     public function updateByPage(array $menu, IPage $page): array
     {
-        $this->doRecursive($menu, $page);
-
+        foreach ($menu as $k => $item) {
+            $find = MenuService::pagesExistsInMenu($item, $page);
+            if ($find) $menu[$k] = $page->forMenu();
+            else if ($item instanceof IMenuDirectory) {
+                $menu[$k] = $this->updateRecursive($item, $page);
+            }
+        }
         return $menu;
     }
 
-    protected function doRecursive(array &$menu, IPage ...$pages): void
+    /**
+     * @param IMenuDirectory $item
+     * @param IPage $page
+     * @return IMenuDirectory
+     */
+    protected function updateRecursive(IMenuDirectory $item, IPage $page): IMenuDirectory
     {
-        array_walk($menu, function (&$item, $pageKey) use ($pages) {
-            $filtered = array_filter($pages, fn($page) => $page->getKey() === $pageKey);
-            $page = array_shift($filtered);
-            if ($page) $item = $page->toArray();
-            else if ($this->isDir($item)) $this->doRecursive($item, ...$pages);
-        });
+        foreach ($item->getItems() as $k => $current) {
+            if ($current instanceof IMenuDirectory)
+                $item->update($k, $this->updateRecursive($current, $page));
+            else if (MenuService::pagesExistsInMenu($current, $page)) {
+                $item->update($k, $page->forMenu());
+            }
+        }
+        return $item;
     }
 }
