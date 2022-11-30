@@ -17,28 +17,21 @@ class MenuRepository implements IMenuRepository
     }
 
     /**
-     * @return IMenu
-     * @throws \Throwable
+     * @return IMenu|null
      */
-    public function getMenu(): IMenu
+    public function getMenu(): ?IMenu
     {
         return $this->find(MenuService::BASE_MENU_KEY);
     }
 
     /**
      * @param string $key
-     * @return IMenu
-     * @throws \Throwable
+     * @return IMenu|null
+     *
      */
-    public function find(string $key): IMenu
+    public function find(string $key): ?IMenu
     {
-        throw_if(
-            !isset($this->menu[$key]),
-            \OutOfRangeException::class,
-            "Запрошенного меню($key) не существует"
-        );
-
-        return $this->menu[$key];
+        return $this->menu[$key] ?? null;
     }
 
     /**

@@ -150,7 +150,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
             'body_layout' => $this->body,
             'is_auth' => auth()->check(),
             'user' => auth()->user(),
-            'menu' => MenuService::repository()->getMenu()->toArray()
+            'menu' => MenuService::repository()->getMenu()?->toArray() ?? []
         ];
     }
 
