@@ -143,14 +143,14 @@ abstract class BasePage implements Responsable, IDisabled, IPage
             'public_scripts' => $this->publicScripts,
             'footer_scripts' => $this->footer_scripts,
             'meta' => $this->meta,
-            'title' => $this->title,
+            'title' => $this->getTitle(),
             'lang' => App::getLocale(),
             'header_layout' => $this->getHeaderLayout(),
             'footer_layout' => $this->getFooterLayout(),
             'body_layout' => $this->body,
             'is_auth' => auth()->check(),
             'user' => auth()->user(),
-            'menu' => MenuService::repository()->getMenu()?->toArray() ?? []
+            'menu' => MenuService::repository()->getMenu() ?? []
         ];
     }
 

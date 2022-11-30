@@ -2,6 +2,7 @@
 namespace Cptbadcode\LaravelPager;
 
 
+use Cptbadcode\LaravelPager\Contracts\Menu\IMenuDirectory;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Actions\{MenuRemover, MenuUpdater};
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;
@@ -75,14 +76,22 @@ class PageServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../resources/views/components/layouts' => resource_path('views/vendor/laravel-pager'),
+        ], 'laravel-pager-components');
+
+        $this->publishes([
+            __DIR__.'/../resources/views/partials' => resource_path('views/partials'),
         ], 'laravel-pager-views');
     }
 
     public function configureComponents()
     {
         Blade::componentNamespace('Cptbadcode\\LaravelPager\\Views\\Components', 'laravel-pager');
+
+        Blade::if('menuDir', fn($value) => $value instanceof IMenuDirectory);
+
         $this->callAfterResolving(BladeCompiler::class, function () {
             Blade::component('layout', Layout::class);
+            Blade::component('menu', 'menu');
 
             $dynamicComponents = ['header' => Header::class, 'body' => Body::class, 'footer' => Footer::class];
             foreach ($dynamicComponents as $tag => $component) {
@@ -90,6 +99,17 @@ class PageServiceProvider extends ServiceProvider
                 PageService::addDynamicComponent($tag);
             }
         });
+    }
+
+    /**
+     * Register the given component.
+     *
+     * @param  string  $component
+     * @return void
+     */
+    protected function registerComponent(string $component)
+    {
+        Blade::component('laravel-pager::components.templates.'.$component, 'lp-'.$component);
     }
 
     private function configureRoutes()

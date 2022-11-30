@@ -1,22 +1,13 @@
 <nav>
     <div class="logo"></div>
-    @if($page['menu'])
-    <ul>
-        @foreach($page['menu'] as $menu)
-            <li @class([
-                'disabled' => $menu['is_disabled']
-            ])>
-                <a href="{{ $menu['uri'] }}">{{ $menu['title'] }}</a>
-            </li>
-        @endforeach
-    </ul>
-    @endif
+
+    <x-laravel-pager::menu :list="$page['menu']"></x-laravel-pager::menu>
 </nav>
 <header>
     <div class="headline">
         <div class="inner">
-            <h1>Hello 2</h1>
-            <p>Scroll down the page</p>
+            <h1>{{ $page['title'] }}</h1>
+            <p>Выбранный язык: {{ $page['lang'] }}</p>
         </div>
     </div>
 </header>

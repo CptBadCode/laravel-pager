@@ -14,9 +14,9 @@ class PageService
         LANG_FILE = 'page',
         CACHE_PAGE_KEY = 'pages',
         ROOT_VIEW = 'laravel-pager::app',
-        DEFAULT_HEADER_COMPONENT = 'laravel-pager::components.layouts.header',
-        DEFAULT_BODY_COMPONENT = 'laravel-pager::components.layouts.body',
-        DEFAULT_FOOTER_COMPONENT = 'laravel-pager::components.layouts.footer';
+        DEFAULT_HEADER_COMPONENT = 'laravel-pager::components.templates.main.layouts.header',
+        DEFAULT_BODY_COMPONENT = 'laravel-pager::components.templates.main.layouts.body',
+        DEFAULT_FOOTER_COMPONENT = 'laravel-pager::components.templates.main.layouts.footer';
 
     public static bool
         $cachedPage = false;

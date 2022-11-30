@@ -17,11 +17,11 @@ class MenuRepository implements IMenuRepository
     }
 
     /**
-     * @return IMenu|null
+     * @return array|null
      */
-    public function getMenu(): ?IMenu
+    public function getMenu(): ?array
     {
-        return $this->find(MenuService::BASE_MENU_KEY);
+        return $this->find(MenuService::BASE_MENU_KEY)?->getMenu();
     }
 
     /**
