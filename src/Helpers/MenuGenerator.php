@@ -3,13 +3,19 @@
 namespace Cptbadcode\LaravelPager\Helpers;
 
 use Cptbadcode\LaravelPager\Contracts\IMenu;
+use Illuminate\Support\Str;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
 use Cptbadcode\LaravelPager\Menu\{Menu, MenuDirectory};
 use Cptbadcode\LaravelPager\PageService;
 
 class MenuGenerator
 {
-    public static function generateMenu(string $path): Menu
+    /**
+     * @param string $path
+     * @param array $attributes
+     * @return Menu
+     */
+    public static function generateMenu(string $path, array $attributes): Menu
     {
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path),
@@ -21,7 +27,7 @@ class MenuGenerator
 
             if (!$path = self::getMenuObject($splFileInfo)) continue;
 
-            $path = self::reduceInDepth($path, $iterator, $menu);
+            $path = self::reduceInDepth($path, $iterator, $menu, $attributes);
 
             if(!$menu->find($path->key)) $menu->add($path);
         }
@@ -60,12 +66,14 @@ class MenuGenerator
      * @param IMenuDirectory|IMenuItem $item
      * @param \RecursiveIteratorIterator $iterator
      * @param IMenu $menu
+     * @param array $attributes
      * @return IMenuDirectory|IMenuItem
      */
     private static function reduceInDepth(
         IMenuDirectory|IMenuItem $item,
         \RecursiveIteratorIterator $iterator,
-        IMenu $menu
+        IMenu $menu,
+        array $attributes
     ): IMenuDirectory|IMenuItem
     {
         for ($depth = $iterator->getDepth() - 1; $depth >= 0; $depth--) {
@@ -75,7 +83,12 @@ class MenuGenerator
                 if ($menu->find($item->key)) continue; // добавлен ли уже элемент в меню
                 $dir->addItem($item);
             }
-            else $item = new MenuDirectory($titleDir, $titleDir, [$item]);
+            else {
+                $attrKey = Str::lower($titleDir);
+                $title = $attributes[$attrKey]['title'] ?? $titleDir;
+                $sort = $attributes[$attrKey]['sortKey'] ?? 0;
+                $item = new MenuDirectory($title, $titleDir, [$item], $sort);
+            }
         }
 
         return $item;

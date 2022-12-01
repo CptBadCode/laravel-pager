@@ -18,8 +18,9 @@ abstract class BasePage implements Responsable, IDisabled, IPage
 {
     use Disabled;
 
-    public static string
-        $key;
+    public static string $key;
+
+    public int $sortKeyInMenu = 0;
 
     protected string
         $title = 'Base Page Title';
@@ -109,7 +110,8 @@ abstract class BasePage implements Responsable, IDisabled, IPage
             title: $this->title,
             uri: $this->uri,
             key: $this->getKey(),
-            isDisabled: $this->disabled
+            isDisabled: $this->disabled,
+            sortKey: $this->sortKeyInMenu
         );
     }
 

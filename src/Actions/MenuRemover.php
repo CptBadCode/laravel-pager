@@ -17,7 +17,7 @@ class MenuRemover implements IMenuRemover
         $menu = array_filter($menu, function ($item) use ($pages) {
             $find = MenuService::pagesExistsInMenu($item, ...$pages);
             if ($find) return false;
-            else if ($item instanceof IMenuDirectory) {
+            else if (MenuService::isDir($item)) {
                 $this->removeRecursive($item, ...$pages);
                 if ($item->isEmpty()) return false;
             }
@@ -34,7 +34,7 @@ class MenuRemover implements IMenuRemover
     protected function removeRecursive(IMenuDirectory|IMenuItem $item, IPage ...$pages): void
     {
         foreach ($item->getItems() as $current) {
-            if ($current instanceof IMenuDirectory) {
+            if (MenuService::isDir($current)) {
                 $this->removeRecursive($current, ...$pages);
                 if ($current->isEmpty()) $item->remove($current);
             }

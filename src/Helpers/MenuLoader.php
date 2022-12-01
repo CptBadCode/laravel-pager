@@ -9,19 +9,20 @@ use Cptbadcode\LaravelPager\Contracts\IMenuLoader;
 
 class MenuLoader implements IMenuLoader
 {
-    public static function loadDefault()
+    public static function loadDefault(array $attributes = [])
     {
-        self::load(MenuService::BASE_MENU_KEY, PageService::getRootPath());
+        self::load(MenuService::BASE_MENU_KEY, PageService::getRootPath(), $attributes);
     }
 
-    public static function load(string $nameMenu, string $filepath)
+    public static function load(string $nameMenu, string $filepath, array $attributes = [])
     {
         if (!Cache::has(MenuService::CACHE_MENU_KEY)) {
             MenuService::repository()
                 ->addOrUpdate(
                     $nameMenu,
-                    MenuGenerator::generateMenu($filepath)
+                    MenuGenerator::generateMenu($filepath, $attributes)
                 );
         }
+        MenuService::repository()->sort($nameMenu);
     }
 }

@@ -3,6 +3,7 @@
 namespace Cptbadcode\LaravelPager\Menu;
 
 use Cptbadcode\LaravelPager\Helpers\MenuGenerator;
+use Cptbadcode\LaravelPager\Helpers\MenuSorter;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Contracts\{IMenu, IMenuRemover, IMenuUpdater, IPage, Menu\IMenuDirectory, Menu\IMenuItem};
 
@@ -89,6 +90,11 @@ class Menu implements IMenu
     public function find(string $key): IMenuDirectory|IMenuItem|null
     {
         return MenuService::menuItemsHasKey($key, ...$this->menu);
+    }
+
+    public function sort()
+    {
+        $this->menu = MenuSorter::sort(...$this->menu);
     }
 
     /**

@@ -12,4 +12,5 @@ interface IMenu
     public function updateMenuByPages(IPage ...$pages);
     public function updateMenu();
     public function removeFromMenu(IPage ...$pages);
+    public function sort();
 }

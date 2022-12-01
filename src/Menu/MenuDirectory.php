@@ -3,23 +3,18 @@
 namespace Cptbadcode\LaravelPager\Menu;
 
 use Cptbadcode\LaravelPager\Contracts\ResponsableArr;
+use Cptbadcode\LaravelPager\Helpers\MenuSorter;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
 
 class MenuDirectory implements IMenuDirectory, ResponsableArr
 {
-    public string $title;
-
-    public string $key;
-
-    protected array $items = [];
-
-    public function __construct(string $title, string $key, array $items = [])
-    {
-        $this->title = $title;
-        $this->key = $key;
-        $this->items = $items;
-    }
+    public function __construct(
+        public string $title,
+        public string $key,
+        protected array $items = [],
+        public int $sortKey = 0
+    ){}
 
     public function getItems(): array
     {
@@ -80,6 +75,11 @@ class MenuDirectory implements IMenuDirectory, ResponsableArr
     public function remove(IMenuDirectory|IMenuItem $item)
     {
         $this->items = array_values(array_filter($this->items, fn($current) => $current->key !== $item->key));
+    }
+
+    public function sortItems()
+    {
+        $this->items = MenuSorter::sort(...$this->items);
     }
 
     /**

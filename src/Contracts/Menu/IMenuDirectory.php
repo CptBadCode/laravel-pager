@@ -10,4 +10,5 @@ interface IMenuDirectory
     public function remove(IMenuDirectory|IMenuItem $item);
     public function addItem(IMenuItem|IMenuDirectory $item);
     public function addItems(IMenuItem|IMenuDirectory ...$items);
+    public function sortItems();
 }

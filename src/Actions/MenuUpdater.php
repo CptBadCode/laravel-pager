@@ -42,7 +42,7 @@ class MenuUpdater implements IMenuUpdater
         foreach ($menu as $k => $item) {
             $find = MenuService::pagesExistsInMenu($item, $page);
             if ($find) $menu[$k] = $page->forMenu();
-            else if ($item instanceof IMenuDirectory) {
+            else if (MenuService::isDir($item)) {
                 $menu[$k] = $this->updateRecursive($item, $page);
             }
         }
@@ -57,7 +57,7 @@ class MenuUpdater implements IMenuUpdater
     protected function updateRecursive(IMenuDirectory $item, IPage $page): IMenuDirectory
     {
         foreach ($item->getItems() as $k => $current) {
-            if ($current instanceof IMenuDirectory)
+            if (MenuService::isDir($current))
                 $item->update($k, $this->updateRecursive($current, $page));
             else if (MenuService::pagesExistsInMenu($current, $page)) {
                 $item->update($k, $page->forMenu());

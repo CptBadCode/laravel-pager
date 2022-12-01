@@ -33,6 +33,8 @@ class PageServiceProvider extends ServiceProvider
         PageService::loadPages();
         PageService::applyMiddlewareAll(['web']);
 
+        MenuService::loadMenu();
+
         $this->configureRoutes();
         $this->configurePublishing();
         $this->configureComponents();
@@ -87,7 +89,7 @@ class PageServiceProvider extends ServiceProvider
     {
         Blade::componentNamespace('Cptbadcode\\LaravelPager\\Views\\Components', 'laravel-pager');
 
-        Blade::if('menuDir', fn($value) => $value instanceof IMenuDirectory);
+        Blade::if('menuDir', fn($value) => MenuService::isDir($value));
 
         $this->callAfterResolving(BladeCompiler::class, function () {
             Blade::component('layout', Layout::class);
@@ -99,17 +101,6 @@ class PageServiceProvider extends ServiceProvider
                 PageService::addDynamicComponent($tag);
             }
         });
-    }
-
-    /**
-     * Register the given component.
-     *
-     * @param  string  $component
-     * @return void
-     */
-    protected function registerComponent(string $component)
-    {
-        Blade::component('laravel-pager::components.templates.'.$component, 'lp-'.$component);
     }
 
     private function configureRoutes()

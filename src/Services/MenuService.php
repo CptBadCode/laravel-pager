@@ -23,22 +23,24 @@ class MenuService
     /**
      * Load menu from page filesystem
      * @note If you enable cache. Clear this
+     * @param array $attributes
      * @return void
      */
-    public static function loadMenu(): void
+    public static function loadMenu(array $attributes = []): void
     {
-        MenuLoader::loadDefault();
+        MenuLoader::loadDefault($attributes);
     }
 
     /**
      * load addition menu from dir
      * @param string $nameMenu
      * @param string $filepath
+     * @param array $attributes
      * @return void
      */
-    public static function generateMenu(string $nameMenu, string $filepath): void
+    public static function generateMenu(string $nameMenu, string $filepath, array $attributes = []): void
     {
-        MenuLoader::load($nameMenu, $filepath);
+        MenuLoader::load($nameMenu, $filepath, $attributes);
     }
 
     public static function menuItemsHasKey(string $key, IMenuDirectory|IMenuItem ...$items): IMenuDirectory|IMenuItem|null
@@ -99,6 +101,11 @@ class MenuService
         self::$cacheMenu = true;
 
         return new static;
+    }
+
+    public static function isDir($item): bool
+    {
+        return $item instanceof IMenuDirectory;
     }
 
     public static function menuRepositoryUsing(string $concrete): void
