@@ -2,8 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Helpers;
 
-use Cptbadcode\LaravelPager\Contracts\Menu\IMenuDirectory;
-use Cptbadcode\LaravelPager\Contracts\Menu\IMenuItem;
+use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
 use Cptbadcode\LaravelPager\Services\MenuService;
 
 class MenuSorter

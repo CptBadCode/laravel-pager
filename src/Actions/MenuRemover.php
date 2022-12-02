@@ -2,8 +2,9 @@
 
 namespace Cptbadcode\LaravelPager\Actions;
 
+use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\Services\MenuService;
-use Cptbadcode\LaravelPager\Contracts\{IPage, IMenuRemover, Menu\IMenuDirectory, Menu\IMenuItem};
+use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuRemover, IMenuDirectory, IMenuItem};
 
 class MenuRemover implements IMenuRemover
 {

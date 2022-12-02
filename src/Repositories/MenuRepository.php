@@ -3,7 +3,7 @@
 namespace Cptbadcode\LaravelPager\Repositories;
 
 use Cptbadcode\LaravelPager\Services\MenuService;
-use Cptbadcode\LaravelPager\Contracts\{IMenu, IMenuRepository};
+use Cptbadcode\LaravelPager\Contracts\Menu\{IMenu, IMenuRepository};
 use Illuminate\Support\Facades\Cache;
 
 class MenuRepository implements IMenuRepository

@@ -19,7 +19,8 @@ class PageService
         DEFAULT_FOOTER_COMPONENT = 'laravel-pager::components.templates.main.layouts.footer';
 
     public static bool
-        $cachedPage = false;
+        $cachedPage = false,
+        $localeTitle = false;
 
     public static array
         $dynamicComponents = [];
@@ -60,7 +61,7 @@ class PageService
      */
     public static function removeFromMenu(string $key, string|IPage ...$pages): void
     {
-        $pages = self::convertKeysToPage(...$pages);
+        $pages = self::getInstancePages($pages);
         MenuService::repository()
             ->find($key)
             ->removeFromMenu(...$pages);
@@ -135,6 +136,13 @@ class PageService
         return new static;
     }
 
+    public static function enableLocaleTitle(): static
+    {
+        self::$localeTitle = true;
+
+        return new static;
+    }
+
     /**
      *
      * @param string $tag
@@ -188,11 +196,18 @@ class PageService
         app()->singleton(IPageRepository::class, $concrete);
     }
 
-    private static function convertKeysToPage(string|IPage ...$pages)
+    /**
+     * Получить объекты страниц из переданных ключей
+     * @param array $pages
+     * @return array
+     */
+    public static function getInstancePages(array $pages): array
     {
-        return array_reduce($pages, function ($res, $page) {
-            $res[] = (is_string($page)) ? self::repository()->getPageOrFail($page) : $page;
-            return $res;
-        }, []);
+        $result = [];
+        foreach ($pages as $k => $page) {
+            if (is_array($page)) $result[$k] = self::getInstancePages($page);
+            else $result[$k] = (is_string($page)) ? self::repository()->getPageOrFail($page) : $page;
+        }
+        return $result;
     }
 }

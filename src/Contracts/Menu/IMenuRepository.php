@@ -1,6 +1,6 @@
 <?php
 
-namespace Cptbadcode\LaravelPager\Contracts;
+namespace Cptbadcode\LaravelPager\Contracts\Menu;
 
 interface IMenuRepository
 {

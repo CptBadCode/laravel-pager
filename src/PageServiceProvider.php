@@ -1,8 +1,6 @@
 <?php
 namespace Cptbadcode\LaravelPager;
 
-
-use Cptbadcode\LaravelPager\Contracts\Menu\IMenuDirectory;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Actions\{MenuRemover, MenuUpdater};
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;

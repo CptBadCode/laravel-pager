@@ -2,10 +2,11 @@
 
 namespace Cptbadcode\LaravelPager\Menu;
 
+use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\Helpers\MenuGenerator;
 use Cptbadcode\LaravelPager\Helpers\MenuSorter;
 use Cptbadcode\LaravelPager\Services\MenuService;
-use Cptbadcode\LaravelPager\Contracts\{IMenu, IMenuRemover, IMenuUpdater, IPage, Menu\IMenuDirectory, Menu\IMenuItem};
+use Cptbadcode\LaravelPager\Contracts\Menu\{IMenu, IMenuRemover, IMenuUpdater, IMenuDirectory, IMenuItem};
 
 class Menu implements IMenu
 {

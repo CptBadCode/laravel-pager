@@ -2,7 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Helpers;
 
-use Cptbadcode\LaravelPager\Contracts\IMenu;
+use Cptbadcode\LaravelPager\Contracts\Menu\IMenu;
 use Illuminate\Support\Str;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
 use Cptbadcode\LaravelPager\Menu\{Menu, MenuDirectory};
@@ -13,9 +13,9 @@ class MenuGenerator
     /**
      * @param string $path
      * @param array $attributes
-     * @return Menu
+     * @return IMenu
      */
-    public static function generateMenu(string $path, array $attributes): Menu
+    public static function generateMenu(string $path, array $attributes): IMenu
     {
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path),

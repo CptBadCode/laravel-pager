@@ -46,8 +46,6 @@ abstract class BasePage implements Responsable, IDisabled, IPage
 
     public string $uri = '/';
 
-    public bool $lang = true;
-
     protected bool $isCanAddToMenu = true;
 
     protected string|null $action = null;
@@ -86,7 +84,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
 
     public function getTitle(): string
     {
-        return $this->lang ? __($this->getLandKey()) : $this->title;
+        return PageService::$localeTitle ? __($this->getLandKey()) : $this->title;
     }
 
     public function getMiddleware(): array

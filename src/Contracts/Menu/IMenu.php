@@ -1,8 +1,8 @@
 <?php
 
-namespace Cptbadcode\LaravelPager\Contracts;
+namespace Cptbadcode\LaravelPager\Contracts\Menu;
 
-use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
+use Cptbadcode\LaravelPager\Contracts\IPage;
 
 interface IMenu
 {

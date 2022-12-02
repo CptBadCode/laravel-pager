@@ -2,8 +2,8 @@
 
 namespace Cptbadcode\LaravelPager\Actions;
 
-use Cptbadcode\LaravelPager\Contracts\{IPage, IMenuUpdater};;
-use Cptbadcode\LaravelPager\Contracts\Menu\IMenuDirectory;
+use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuDirectory, IMenuUpdater};;
+use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\PageService;
 use Cptbadcode\LaravelPager\Services\MenuService;
 

@@ -2,13 +2,15 @@
 
 namespace Cptbadcode\LaravelPager\Services;
 
-use Cptbadcode\LaravelPager\Contracts\{
+use Cptbadcode\LaravelPager\Contracts\IPage;
+use Cptbadcode\LaravelPager\Helpers\MenuPageGenerator;
+use Cptbadcode\LaravelPager\PageService;
+use Cptbadcode\LaravelPager\Contracts\Menu\{
     IMenuUpdater,
     IMenuRepository,
     IMenuRemover,
-    IPage,
-    Menu\IMenuDirectory,
-    Menu\IMenuItem
+    IMenuDirectory,
+    IMenuItem
 };
 use Cptbadcode\LaravelPager\Helpers\MenuLoader;
 
@@ -43,6 +45,22 @@ class MenuService
         MenuLoader::load($nameMenu, $filepath, $attributes);
     }
 
+    /**
+     * load menu from pages names
+     * @param string $nameMenu
+     * @param array $pages
+     * @return void
+     */
+    public static function generateMenuFromPages(string $nameMenu, array $pages): void
+    {
+        MenuLoader::loadFromPages($nameMenu, $pages);
+    }
+
+    /**
+     * @param string $key
+     * @param IMenuDirectory|IMenuItem ...$items
+     * @return IMenuDirectory|IMenuItem|null
+     */
     public static function menuItemsHasKey(string $key, IMenuDirectory|IMenuItem ...$items): IMenuDirectory|IMenuItem|null
     {
         foreach ($items as $item) {
