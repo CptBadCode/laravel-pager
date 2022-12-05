@@ -21,6 +21,6 @@ class Header extends Component
      */
     public function render()
     {
-        return view(($this->page['header_layout'] ?? PageService::DEFAULT_HEADER_COMPONENT));
+        return view(($this->page['header_layout'] ?? PageService::DEFAULT_TEMPLATE.'.'.PageService::DEFAULT_HEADER));
     }
 }

@@ -26,9 +26,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
         $title = 'Base Page Title';
 
     protected string
-        $body = PageService::DEFAULT_BODY_COMPONENT,
-        $header = PageService::DEFAULT_HEADER_COMPONENT,
-        $footer = PageService::DEFAULT_FOOTER_COMPONENT;
+        $template = PageService::DEFAULT_TEMPLATE;
 
     protected array
         $styles = ['resources/css/app.css'],
@@ -57,14 +55,24 @@ abstract class BasePage implements Responsable, IDisabled, IPage
         return $this->{$key} ?? false;
     }
 
+    public function useTemplate(string $path)
+    {
+        $this->template = $path;
+    }
+
     public function getHeaderLayout(): string
     {
-        return PageService::headerForPage($this->getKey()) ?? $this->header;
+        return PageService::headerForPage($this->getKey()) ?? $this->template.'.'.PageService::DEFAULT_HEADER;
     }
 
     public function getFooterLayout(): string
     {
-        return PageService::footerForPage($this->getKey()) ?? $this->footer;
+        return PageService::footerForPage($this->getKey()) ?? $this->template.'.'.PageService::DEFAULT_FOOTER;
+    }
+
+    public function getBodyLayout(): string
+    {
+        return $this->template.'.'.PageService::DEFAULT_BODY;
     }
 
     public function getKey(): string
@@ -115,7 +123,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
 
     public function __toString(): string
     {
-        return json_encode($this->forMenu());
+        return json_encode($this->forMenu()->toArray());
     }
 
     public function toResponse($request)
@@ -147,7 +155,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
             'lang' => App::getLocale(),
             'header_layout' => $this->getHeaderLayout(),
             'footer_layout' => $this->getFooterLayout(),
-            'body_layout' => $this->body,
+            'body_layout' => $this->getBodyLayout(),
             'is_auth' => auth()->check(),
             'user' => auth()->user(),
             'menu' => MenuService::repository()->getMenu() ?? []

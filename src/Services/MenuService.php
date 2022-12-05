@@ -3,8 +3,6 @@
 namespace Cptbadcode\LaravelPager\Services;
 
 use Cptbadcode\LaravelPager\Contracts\IPage;
-use Cptbadcode\LaravelPager\Helpers\MenuPageGenerator;
-use Cptbadcode\LaravelPager\PageService;
 use Cptbadcode\LaravelPager\Contracts\Menu\{
     IMenuUpdater,
     IMenuRepository,

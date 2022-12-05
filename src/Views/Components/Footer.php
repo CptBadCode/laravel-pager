@@ -21,6 +21,6 @@ class Footer extends Component
      */
     public function render()
     {
-        return view(($this->page['footer_layout'] ?? PageService::DEFAULT_FOOTER_COMPONENT));
+        return view(($this->page['footer_layout'] ?? PageService::DEFAULT_TEMPLATE.'.'.PageService::DEFAULT_FOOTER));
     }
 }

@@ -21,6 +21,6 @@ class Body extends Component
      */
     public function render()
     {
-        return view(($this->page['body_layout'] ?? PageService::DEFAULT_BODY_COMPONENT));
+        return view(($this->page['body_layout'] ?? PageService::DEFAULT_TEMPLATE.'.'.PageService::DEFAULT_BODY));
     }
 }

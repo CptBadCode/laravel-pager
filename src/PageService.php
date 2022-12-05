@@ -14,9 +14,10 @@ class PageService
         LANG_FILE = 'page',
         CACHE_PAGE_KEY = 'pages',
         ROOT_VIEW = 'laravel-pager::app',
-        DEFAULT_HEADER_COMPONENT = 'laravel-pager::components.templates.main.layouts.header',
-        DEFAULT_BODY_COMPONENT = 'laravel-pager::components.templates.main.layouts.body',
-        DEFAULT_FOOTER_COMPONENT = 'laravel-pager::components.templates.main.layouts.footer';
+        DEFAULT_TEMPLATE = 'laravel-pager::components.templates.main',
+        DEFAULT_HEADER = 'layouts.header',
+        DEFAULT_BODY = 'layouts.body',
+        DEFAULT_FOOTER = 'layouts.footer';
 
     public static bool
         $cachedPage = false,
@@ -191,6 +192,18 @@ class PageService
         return self::$footerComponents[$pageKey] ?? null;
     }
 
+    /**
+     * @param string $templatePath
+     * @param IPage|string ...$pages
+     * @return void
+     */
+    public static function useTemplateForPage(string $templatePath, IPage|string ...$pages): void
+    {
+        foreach (self::getInstancePages($pages) as $page) {
+            $page->useTemplate($templatePath);
+        }
+    }
+
     public static function pageRepositoryUsing(string $concrete): void
     {
         app()->singleton(IPageRepository::class, $concrete);
@@ -206,7 +219,7 @@ class PageService
         $result = [];
         foreach ($pages as $k => $page) {
             if (is_array($page)) $result[$k] = self::getInstancePages($page);
-            else $result[$k] = (is_string($page)) ? self::repository()->getPageOrFail($page) : $page;
+            else $result[$k] = self::repository()->getPageOrFail(is_string($page) ? $page : $page::$key);
         }
         return $result;
     }
