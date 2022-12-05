@@ -68,7 +68,8 @@ trait CommandFileCreator
         return [
             'NAMESPACE'         => implode(DIRECTORY_SEPARATOR, array_merge([$this->fileNamespace], $classNamePart)),
             'CLASS_NAME'        => $className,
-            'KEY'               => Str::snake($className)
+            'KEY'               => Str::snake($className),
+            'TITLE'             => $this->option('title') ?? $className
         ];
     }
 

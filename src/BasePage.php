@@ -22,7 +22,7 @@ abstract class BasePage implements Responsable, IDisabled, IPage
 
     public int $sortKeyInMenu = 0;
 
-    protected string
+    protected ?string
         $title = 'Base Page Title';
 
     protected string
