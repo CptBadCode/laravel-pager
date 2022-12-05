@@ -12,8 +12,6 @@ class Menu implements IMenu
 {
     protected array $menu = [];
 
-    protected bool $inline = false;
-
     protected IMenuUpdater $menuUpdater;
 
     protected IMenuRemover $menuRemover;

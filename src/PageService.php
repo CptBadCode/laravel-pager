@@ -5,14 +5,17 @@ namespace Cptbadcode\LaravelPager;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Helpers\PageLoader;
 use Cptbadcode\LaravelPager\Services\DisableService;
+use Cptbadcode\LaravelPager\Traits\Caching;
 use Cptbadcode\LaravelPager\Contracts\{IPage, IPageRepository};
 
 class PageService
 {
+    use Caching;
+
     const
         PAGE_NAMESPACE = 'App\\Pages',
         LANG_FILE = 'page',
-        CACHE_PAGE_KEY = 'pages',
+        CACHE_KEY = 'pages',
         ROOT_VIEW = 'laravel-pager::app',
         DEFAULT_TEMPLATE = 'laravel-pager::components.templates.main',
         DEFAULT_HEADER = 'layouts.header',
@@ -20,7 +23,7 @@ class PageService
         DEFAULT_FOOTER = 'layouts.footer';
 
     public static bool
-        $cachedPage = false,
+        $cached = false,
         $localeTitle = false;
 
     public static array
@@ -128,13 +131,6 @@ class PageService
     public static function isPage(string|IPage $class): bool
     {
         return (class_exists($class) && is_subclass_of($class, BasePage::class)) || $class instanceof IPage;
-    }
-
-    public static function enableCachePage(): static
-    {
-        self::$cachedPage = true;
-
-        return new static;
     }
 
     public static function enableLocaleTitle(): static

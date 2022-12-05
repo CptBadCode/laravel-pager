@@ -3,6 +3,7 @@
 namespace Cptbadcode\LaravelPager\Services;
 
 use Cptbadcode\LaravelPager\Contracts\IPage;
+use Cptbadcode\LaravelPager\Traits\Caching;
 use Cptbadcode\LaravelPager\Contracts\Menu\{
     IMenuUpdater,
     IMenuRepository,
@@ -14,11 +15,13 @@ use Cptbadcode\LaravelPager\Helpers\MenuLoader;
 
 class MenuService
 {
-    const CACHE_MENU_KEY = 'menu';
+    use Caching;
+
+    const CACHE_KEY = 'menu';
     const BASE_MENU_KEY = 'main';
 
     public static bool
-        $cacheMenu = false;
+        $cached = false;
 
     /**
      * Load menu from page filesystem
@@ -106,17 +109,6 @@ class MenuService
     public static function repository(): IMenuRepository
     {
         return app(IMenuRepository::class);
-    }
-
-    /**
-     * Включить кеш меню
-     * @return static
-     */
-    public static function enableCacheMenu(): static
-    {
-        self::$cacheMenu = true;
-
-        return new static;
     }
 
     public static function isDir($item): bool

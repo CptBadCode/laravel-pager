@@ -12,7 +12,7 @@ class MenuRepository implements IMenuRepository
 
     public function __construct()
     {
-        $this->menu = Cache::get(MenuService::CACHE_MENU_KEY) ?? [];
+        $this->menu = Cache::get(MenuService::CACHE_KEY) ?? [];
     }
 
     /**
@@ -49,8 +49,7 @@ class MenuRepository implements IMenuRepository
     public function addOrUpdate(string $menuName, IMenu $menu): IMenu
     {
         $this->menu[$menuName] = $menu;
-        if (MenuService::$cacheMenu)
-            Cache::forever(MenuService::CACHE_MENU_KEY, $this->menu);
+        MenuService::cache($this->menu);
 
         return $menu;
     }

@@ -38,7 +38,7 @@ class MenuLoader implements IMenuLoader
 
     private static function apply(string $nameMenu, IMenu $loaded)
     {
-        if (!Cache::has(MenuService::CACHE_MENU_KEY)) {
+        if (!Cache::has(MenuService::CACHE_KEY)) {
             MenuService::repository()
                 ->addOrUpdate(
                     $nameMenu,

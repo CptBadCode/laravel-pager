@@ -13,7 +13,7 @@ class PageRepository implements IPageRepository
 
     public function __construct()
     {
-        $this->pages = Cache::get(PageService::CACHE_PAGE_KEY) ?? [];
+        $this->pages = Cache::get(PageService::CACHE_KEY) ?? [];
     }
 
     public function getPages(): array
@@ -47,8 +47,7 @@ class PageRepository implements IPageRepository
             $page = new $className;
             $this->pages[$page->getKey()] = $page;
 
-            if (PageService::$cachedPage)
-                Cache::forever(PageService::CACHE_PAGE_KEY, $this->pages);
+            PageService::cache($this->pages);
 
             return true;
         }

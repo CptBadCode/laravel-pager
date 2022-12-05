@@ -22,14 +22,19 @@ class MenuGenerator
             \RecursiveIteratorIterator::CHILD_FIRST
         );
         $menu = new Menu([]);
+        $inlineMenu = $attributes['inline'] ?? false;
         foreach ($iterator as $splFileInfo) {
-            if ($iterator->isDot()) continue;
+            if (
+                $iterator->isDot() ||
+                ($inlineMenu && $splFileInfo->isDir()) ||
+                (!$item = self::getMenuObject($splFileInfo))
+            ) continue;
 
-            if (!$path = self::getMenuObject($splFileInfo)) continue;
+            $item = !$inlineMenu
+                ? self::reduceInDepth($item, $iterator, $menu, $attributes)
+                : self::getMenuItem($splFileInfo);
 
-            $path = self::reduceInDepth($path, $iterator, $menu, $attributes);
-
-            if(!$menu->find($path->key)) $menu->add($path);
+            if(!$menu->find($item->key)) $menu->add($item);
         }
         return $menu;
     }
