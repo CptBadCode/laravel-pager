@@ -2,11 +2,12 @@
 
 namespace Cptbadcode\LaravelPager\Repositories;
 
+use Cptbadcode\LaravelPager\Contracts\IRepository;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenu, IMenuRepository};
 use Illuminate\Support\Facades\Cache;
 
-class MenuRepository implements IMenuRepository
+class MenuRepository implements IMenuRepository, IRepository
 {
     protected array $menu = [];
 
@@ -49,11 +50,14 @@ class MenuRepository implements IMenuRepository
     public function addOrUpdate(string $menuName, IMenu $menu): IMenu
     {
         $this->menu[$menuName] = $menu;
-        MenuService::cache($this->menu);
 
         return $menu;
     }
 
+    /**
+     * @param string $menuName
+     * @return void
+     */
     public function sort(string $menuName)
     {
         $menu = $this->find($menuName);
@@ -61,5 +65,10 @@ class MenuRepository implements IMenuRepository
             $menu->sort();
             $this->addOrUpdate($menuName, $menu);
         }
+    }
+
+    public function cache(): void
+    {
+        \Illuminate\Support\Facades\Cache::forever(MenuService::CACHE_KEY, $this->menu);
     }
 }

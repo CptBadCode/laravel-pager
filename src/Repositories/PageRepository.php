@@ -2,12 +2,11 @@
 
 namespace Cptbadcode\LaravelPager\Repositories;
 
-use Cptbadcode\LaravelPager\Contracts\IPage;
-use Cptbadcode\LaravelPager\Contracts\IPageRepository;
+use Cptbadcode\LaravelPager\Contracts\{IPage, IRepository, IPageRepository};
 use Cptbadcode\LaravelPager\PageService;
 use Illuminate\Support\Facades\Cache;
 
-class PageRepository implements IPageRepository
+class PageRepository implements IPageRepository, IRepository
 {
     protected array $pages = [];
 
@@ -47,8 +46,6 @@ class PageRepository implements IPageRepository
             $page = new $className;
             $this->pages[$page->getKey()] = $page;
 
-            PageService::cache($this->pages);
-
             return true;
         }
 
@@ -60,5 +57,10 @@ class PageRepository implements IPageRepository
         foreach ($pages as $page) {
             $this->addPage($page);
         }
+    }
+
+    public function cache(): void
+    {
+        \Illuminate\Support\Facades\Cache::forever(PageService::CACHE_KEY, $this->pages);
     }
 }

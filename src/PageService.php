@@ -5,12 +5,10 @@ namespace Cptbadcode\LaravelPager;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Helpers\PageLoader;
 use Cptbadcode\LaravelPager\Services\DisableService;
-use Cptbadcode\LaravelPager\Traits\Caching;
 use Cptbadcode\LaravelPager\Contracts\{IPage, IPageRepository};
 
 class PageService
 {
-    use Caching;
 
     const
         PAGE_NAMESPACE = 'App\\Pages',
@@ -23,7 +21,6 @@ class PageService
         DEFAULT_FOOTER = 'layouts.footer';
 
     public static bool
-        $cached = false,
         $localeTitle = false;
 
     public static array

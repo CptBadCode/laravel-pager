@@ -1,6 +1,8 @@
 <?php
 namespace Cptbadcode\LaravelPager;
 
+use Cptbadcode\LaravelPager\Console\Commands\CacheMenuCommand;
+use Cptbadcode\LaravelPager\Console\Commands\CachePageCommand;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Actions\{MenuRemover, MenuUpdater};
 use Cptbadcode\LaravelPager\Console\Commands\CreatePageCommand;
@@ -58,7 +60,9 @@ class PageServiceProvider extends ServiceProvider
         }
 
         $this->commands([
-            CreatePageCommand::class
+            CreatePageCommand::class,
+            CachePageCommand::class,
+            CacheMenuCommand::class
         ]);
     }
 
