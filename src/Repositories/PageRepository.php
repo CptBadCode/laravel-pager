@@ -61,6 +61,12 @@ class PageRepository implements IPageRepository, IRepository
 
     public function cache(): void
     {
-        \Illuminate\Support\Facades\Cache::forever(PageService::CACHE_KEY, $this->pages);
+        Cache::forever(PageService::CACHE_KEY, $this->pages);
+    }
+
+    public function clear()
+    {
+        $this->pages = [];
+        Cache::forget(PageService::CACHE_KEY);
     }
 }

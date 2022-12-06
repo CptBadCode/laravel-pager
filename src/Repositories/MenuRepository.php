@@ -69,6 +69,12 @@ class MenuRepository implements IMenuRepository, IRepository
 
     public function cache(): void
     {
-        \Illuminate\Support\Facades\Cache::forever(MenuService::CACHE_KEY, $this->menu);
+        Cache::forever(MenuService::CACHE_KEY, $this->menu);
+    }
+
+    public function clear()
+    {
+        $this->menu = [];
+        Cache::forget(MenuService::CACHE_KEY);
     }
 }
