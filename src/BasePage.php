@@ -5,28 +5,26 @@ namespace Cptbadcode\LaravelPager;
 use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\Menu\MenuItem;
 use Cptbadcode\LaravelPager\Services\MenuService;
-use Cptbadcode\LaravelPager\Traits\Disabled;
+use Cptbadcode\LaravelPager\Traits\{AdditionAction, Disabled, PageMiddleware, TemplatesPage};
 use \Cptbadcode\LaravelPager\Contracts\Disabled as IDisabled;
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 abstract class BasePage implements Responsable, IDisabled, IPage
 {
-    use Disabled;
+    use Disabled, TemplatesPage, PageMiddleware, AdditionAction;
 
     public static string $key;
 
+    /**
+     * Position in menu
+     * @var int
+     */
     public int $sortKeyInMenu = 0;
 
     protected ?string
         $title = 'Base Page Title';
-
-    protected string
-        $template = PageService::DEFAULT_TEMPLATE;
 
     protected array
         $styles = ['resources/css/app.css'],
@@ -40,39 +38,13 @@ abstract class BasePage implements Responsable, IDisabled, IPage
         ['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'],
     ];
 
-    protected array $middleware = [];
-
     public string $uri = '/';
 
     protected bool $isCanAddToMenu = true;
 
-    protected string|null $action = null;
-
-    protected array $actionResult = [];
-
     public function get(string $key): mixed
     {
         return $this->{$key} ?? false;
-    }
-
-    public function useTemplate(string $path)
-    {
-        $this->template = $path;
-    }
-
-    public function getHeaderLayout(): string
-    {
-        return PageService::headerForPage($this->getKey()) ?? $this->template.'.'.PageService::DEFAULT_HEADER;
-    }
-
-    public function getFooterLayout(): string
-    {
-        return PageService::footerForPage($this->getKey()) ?? $this->template.'.'.PageService::DEFAULT_FOOTER;
-    }
-
-    public function getBodyLayout(): string
-    {
-        return $this->template.'.'.PageService::DEFAULT_BODY;
     }
 
     public function getKey(): string
@@ -93,21 +65,6 @@ abstract class BasePage implements Responsable, IDisabled, IPage
     public function getTitle(): string
     {
         return PageService::$localeTitle ? __($this->getLandKey()) : $this->title;
-    }
-
-    public function getMiddleware(): array
-    {
-        return $this->middleware;
-    }
-
-    public function setMiddleware(array $middleware = [])
-    {
-        $this->middleware = $middleware;
-    }
-
-    public function hasActionToCall(): bool
-    {
-        return !!$this->action;
     }
 
     public function forMenu(): MenuItem
@@ -160,26 +117,6 @@ abstract class BasePage implements Responsable, IDisabled, IPage
             'user' => auth()->user(),
             'menu' => MenuService::repository()->getMenu() ?? []
         ];
-    }
-
-    /**
-     * Запустить дополнительный обработчик маршрута
-     * @param Container $container
-     * @param $route
-     * @return mixed
-     * @throws BindingResolutionException
-     */
-    public function callAction(Container $container, $route): mixed
-    {
-        if ($this->hasActionToCall()) {
-            $controller = $container->make(ltrim($this->action, '\\'));
-            $dispatcher = new ControllerDispatcher($container);
-            resolve_model_params_for_route($this->action, 'handle', $route);
-            $this->actionResult = $dispatcher->dispatch($route, $controller, 'handle');
-            return $this->actionResult;
-        }
-
-        throw new \BadMethodCallException('Метода и контроллера для вызова не найдено');
     }
 
     abstract public function renderData($request): array;

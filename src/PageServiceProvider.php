@@ -40,6 +40,8 @@ class PageServiceProvider extends ServiceProvider
 
     private function configureBlade()
     {
+        Blade::if('menuDir', fn($value) => MenuService::isDir($value));
+
         Blade::directive('meta', function ($attributes) {
             return "<?php echo app(\Cptbadcode\LaravelPager\Helpers\TagGenerator::class)->generate('meta', $attributes); ?>";
         });
@@ -86,8 +88,6 @@ class PageServiceProvider extends ServiceProvider
     public function configureComponents()
     {
         Blade::componentNamespace('Cptbadcode\\LaravelPager\\Views\\Components', 'laravel-pager');
-
-        Blade::if('menuDir', fn($value) => MenuService::isDir($value));
 
         $this->callAfterResolving(BladeCompiler::class, function () {
             Blade::component('layout', Layout::class);

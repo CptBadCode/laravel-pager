@@ -108,7 +108,7 @@ class PageService
     {
         foreach ($pages as $page) {
             $page = static::repository()->getPageOrFail($page);
-            $page->setMiddleware($middleware);
+            $page->addMiddleware($middleware);
         }
     }
 
@@ -119,7 +119,7 @@ class PageService
     public static function applyMiddlewareAll(array $middleware): void
     {
         foreach (static::repository()->getPages() as $page) {
-            $page->setMiddleware($middleware);
+            $page->addMiddleware($middleware);
         }
     }
 

@@ -3,21 +3,30 @@
 namespace Cptbadcode\LaravelPager\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Cptbadcode\LaravelPager\Contracts\IPage;
 use Cptbadcode\LaravelPager\PageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class PageController extends Controller
 {
+    protected IPage $page;
+
+    public function __construct()
+    {
+        $name = Route::currentRouteName();
+
+        $this->page = PageService::repository()->getPageOrFail($name);
+
+        $this->middleware($this->page->getMiddleware());
+    }
+
     public function __invoke(Request $request)
     {
-        $page = PageService::repository()->getPageOrFail($request->route()->getName());
-
-        if ($page->isDisabled()) return abort(404);
-
-        if ($page->hasActionToCall()) {
-            $page->callAction(app(), $request->route());
+        if ($this->page->hasActionToCall()) {
+            $this->page->callAction(app(), $request->route());
         }
 
-        return $page;
+        return $this->page;
     }
 }
