@@ -13,11 +13,19 @@ if (!function_exists('get_class_from_file')) {
 
 if (!function_exists('resolve_model_params_for_route'))
 {
-    function resolve_model_params_for_route(object|string $class, string $method, $route)
+    function resolve_model_params_for_route(object|string $class, $route)
     {
-        $params = (new \ReflectionMethod($class, $method))->getParameters();
-        BindingParamFromRoute::setParams($params);
-        BindingParamFromRoute::resolveForRoute(app(), $route);
+        $class = new \ReflectionClass($class);
+        $route->action = [
+            "domain" => null,
+            "uses" => "$class->name@handle",
+            "controller" => $class->name,
+            "namespace" => $class->getNamespaceName(),
+            "prefix" => "",
+            "where" => [],
+            "middleware" => []
+        ];
+        \Illuminate\Routing\ImplicitRouteBinding::resolveForRoute(app(), $route);
         return $route;
     }
 }

@@ -29,7 +29,7 @@ trait AdditionAction
         if ($this->hasActionToCall()) {
             $controller = $container->make(ltrim($this->action, '\\'));
             $dispatcher = new ControllerDispatcher($container);
-            resolve_model_params_for_route($this->action, 'handle', $route);
+            resolve_model_params_for_route($this->action, $route);
             $this->actionResult = $dispatcher->dispatch($route, $controller, 'handle');
             return $this->actionResult;
         }
