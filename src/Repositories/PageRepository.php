@@ -35,7 +35,8 @@ class PageRepository implements IPageRepository, IRepository
     public function getPagesByKeys(string ...$keys): array
     {
         return array_reduce($keys, function($res, $key) {
-            $res[] = $this->getPage($key);
+            $page = $this->getPage($key);
+            if ($page) $res[] = $page;
             return $res;
         }, []);
     }

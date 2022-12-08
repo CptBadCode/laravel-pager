@@ -35,7 +35,7 @@ class Menu implements IMenu
     /**
      * @return array
      */
-    public function getMenu(): array
+    public function getItems(): array
     {
         return $this->menu;
     }

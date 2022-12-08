@@ -13,6 +13,10 @@ class PageLoader implements IPageLoader
     {
         $pageRepository = app(IPageRepository::class);
 
+        if (!File::exists(PageService::getRootPath())) {
+            $pageRepository->clear();
+            return $pageRepository;
+        }
         if (!Cache::has(PageService::CACHE_KEY)) {
             $files = File::allFiles(PageService::getRootPath());
             foreach ($files as $file) {

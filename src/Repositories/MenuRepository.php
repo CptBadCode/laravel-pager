@@ -19,9 +19,9 @@ class MenuRepository implements IMenuRepository, IRepository
     /**
      * @return array|null
      */
-    public function getMenu(): ?array
+    public function getMenu(): ?IMenu
     {
-        return $this->find(MenuService::BASE_MENU_KEY)?->getMenu();
+        return $this->find(MenuService::BASE_MENU_KEY);
     }
 
     /**

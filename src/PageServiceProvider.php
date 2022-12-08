@@ -30,11 +30,6 @@ class PageServiceProvider extends ServiceProvider
         MenuService::menuUpdaterUsing(MenuUpdater::class);
         MenuService::menuRemoverUsing(MenuRemover::class);
 
-        PageService::loadPages();
-        PageService::applyMiddlewareAll(['web']);
-
-        MenuService::loadMenu();
-
         $this->configureRoutes();
         $this->configurePublishing();
         $this->configureComponents();
@@ -96,20 +91,15 @@ class PageServiceProvider extends ServiceProvider
         $this->callAfterResolving(BladeCompiler::class, function () {
             Blade::component('layout', Layout::class);
             Blade::component('menu', 'menu');
-
-            $dynamicComponents = ['header' => Header::class, 'body' => Body::class, 'footer' => Footer::class];
-            foreach ($dynamicComponents as $tag => $component) {
-                Blade::component($tag, $component);
-                PageService::addDynamicComponent($tag);
-            }
+            Blade::component('header', Header::class);
+            Blade::component('body', Body::class);
+            Blade::component('footer', Footer::class);
         });
     }
 
     private function configureRoutes()
     {
-        if ($this->app->runningInConsole()) {
-            return;
-        }
+        PageService::loadPages();
 
         Route::group([
             'namespace' => 'Cptbadcode\LaravelPager\Http\Controllers',

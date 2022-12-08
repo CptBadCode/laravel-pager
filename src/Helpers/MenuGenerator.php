@@ -3,6 +3,7 @@
 namespace Cptbadcode\LaravelPager\Helpers;
 
 use Cptbadcode\LaravelPager\Contracts\Menu\IMenu;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenuItem, IMenuDirectory};
 use Cptbadcode\LaravelPager\Menu\{Menu, MenuDirectory};
@@ -17,11 +18,15 @@ class MenuGenerator
      */
     public static function generateMenu(string $path, array $attributes): IMenu
     {
+        $menu = new Menu([]);
+
+        if (!File::exists($path)) return $menu;
+
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path),
             \RecursiveIteratorIterator::CHILD_FIRST
         );
-        $menu = new Menu([]);
+
         $inlineMenu = $attributes['inline'] ?? false;
         foreach ($iterator as $splFileInfo) {
             if (

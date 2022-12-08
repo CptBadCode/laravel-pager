@@ -23,9 +23,6 @@ class PageService
     public static bool
         $localeTitle = false;
 
-    public static array
-        $dynamicComponents = [];
-
     protected static array
         $headerComponents = [],
         $footerComponents = [];
@@ -65,7 +62,7 @@ class PageService
         $pages = self::getInstancePages($pages);
         MenuService::repository()
             ->find($key)
-            ->removeFromMenu(...$pages);
+            ?->removeFromMenu(...$pages);
     }
 
     /**
@@ -75,6 +72,7 @@ class PageService
      */
     public static function enablePage(string|IPage ...$pages): void
     {
+        $pages = self::getInstancePages($pages);
         foreach ($pages as $page) {
             DisableService::enable($page);
         }
@@ -89,6 +87,7 @@ class PageService
      */
     public static function disablePage(string|IPage ...$pages): void
     {
+        $pages = self::getInstancePages($pages);
         foreach ($pages as $page) {
             DisableService::disable($page);
         }
@@ -104,7 +103,8 @@ class PageService
     public static function applyMiddleware(array $middleware, string|IPage ...$pages): void
     {
         foreach ($pages as $page) {
-            $page = static::repository()->getPageOrFail($page);
+            $key = static::isPage($page) ? $page->getKey() : $page;
+            $page = static::repository()->getPageOrFail($key);
             $page->addMiddleware($middleware);
         }
     }
@@ -138,18 +138,6 @@ class PageService
     }
 
     /**
-     *
-     * @param string $tag
-     * @return static
-     */
-    public static function addDynamicComponent(string $tag): static
-    {
-        self::$dynamicComponents[] = $tag;
-
-        return new static;
-    }
-
-    /**
      * pages using header
      * @param string $componentPath
      * @param string ...$pageKeys
@@ -157,7 +145,10 @@ class PageService
      */
     public static function headerComponentUsing(string $componentPath, string ...$pageKeys): static
     {
-        self::$headerComponents = array_fill_keys($pageKeys, $componentPath);
+        static::$headerComponents = array_merge(
+            static::$headerComponents,
+            array_fill_keys($pageKeys, $componentPath)
+        );
 
         return new static;
     }
@@ -170,14 +161,17 @@ class PageService
      */
     public static function footerComponentUsing(string $componentPath, string ...$pageKeys): static
     {
-        self::$footerComponents = array_fill_keys($pageKeys, $componentPath);
+        self::$footerComponents = array_merge(
+            self::$footerComponents,
+            array_fill_keys($pageKeys, $componentPath)
+        );
 
         return new static;
     }
 
     public static function headerForPage(string $pageKey)
     {
-        return self::$headerComponents[$pageKey] ?? null;
+        return static::$headerComponents[$pageKey] ?? null;
     }
 
     public static function footerForPage(string $pageKey)
@@ -192,7 +186,7 @@ class PageService
      */
     public static function useTemplateForPage(string $templatePath, IPage|string ...$pages): void
     {
-        foreach (self::getInstancePages($pages) as $page) {
+        foreach (static::getInstancePages($pages) as $page) {
             $page->useTemplate($templatePath);
         }
     }

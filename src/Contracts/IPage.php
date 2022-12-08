@@ -13,6 +13,7 @@ interface IPage
     public function getTitle(): string;
     public function getMiddleware(): array;
     public function setMiddleware(array $middleware = []);
+    public function addMiddleware(array $middleware = []);
     public function forMenu(): MenuItem;
     public function renderData($request): array;
     public function callAction(Container $container, $route): mixed;
@@ -20,4 +21,5 @@ interface IPage
     public function canAddToMenu(): bool;
     public function getFooterLayout(): string;
     public function getHeaderLayout(): string;
+    public function getBodyLayout(): string;
 }
