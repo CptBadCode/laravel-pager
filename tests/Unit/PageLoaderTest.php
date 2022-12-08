@@ -40,6 +40,7 @@ class PageLoaderTest extends PageTestCase
         Artisan::call('make:page', ['name' => 'About']);
         Artisan::call('make:page', ['name' => 'Company']);
         Artisan::call('make:page', ['name' => 'TestPage']);
+        PageLoader::load();
 
         $this->assertCount(1, $this->pageRepository->getPages());
 
