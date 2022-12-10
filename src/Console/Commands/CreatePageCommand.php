@@ -9,7 +9,7 @@ class CreatePageCommand extends Command
 {
     use CommandFileCreator;
 
-    protected $signature = 'make:page {name : Name handle page} {--title= : Title Page}';
+    protected $signature = 'make:page {name : Name handle page} {--title= : Title Page} {--base_dir= : Dir to upload}';
 
     protected $description = 'Create new page';
 

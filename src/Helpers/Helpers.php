@@ -1,6 +1,5 @@
 <?php
 
-use Cptbadcode\LaravelPager\Helpers\BindingParamFromRoute;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 

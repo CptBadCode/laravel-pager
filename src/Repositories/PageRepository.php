@@ -2,11 +2,11 @@
 
 namespace Cptbadcode\LaravelPager\Repositories;
 
-use Cptbadcode\LaravelPager\Contracts\{IPage, IRepository, IPageRepository};
+use Cptbadcode\LaravelPager\Contracts\{IPage, IPageRepository};
 use Cptbadcode\LaravelPager\PageService;
 use Illuminate\Support\Facades\Cache;
 
-class PageRepository implements IPageRepository, IRepository
+class PageRepository implements IPageRepository
 {
     protected array $pages = [];
 

@@ -2,7 +2,9 @@
 
 namespace Cptbadcode\LaravelPager\Contracts\Menu;
 
-interface IMenuRepository
+use Cptbadcode\LaravelPager\Contracts\IRepository;
+
+interface IMenuRepository extends IRepository
 {
     public function getAll(): array;
     public function find(string $menuName): ?IMenu;

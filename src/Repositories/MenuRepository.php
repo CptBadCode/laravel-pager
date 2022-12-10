@@ -2,12 +2,11 @@
 
 namespace Cptbadcode\LaravelPager\Repositories;
 
-use Cptbadcode\LaravelPager\Contracts\IRepository;
 use Cptbadcode\LaravelPager\Services\MenuService;
 use Cptbadcode\LaravelPager\Contracts\Menu\{IMenu, IMenuRepository};
 use Illuminate\Support\Facades\Cache;
 
-class MenuRepository implements IMenuRepository, IRepository
+class MenuRepository implements IMenuRepository
 {
     protected array $menu = [];
 
@@ -55,6 +54,7 @@ class MenuRepository implements IMenuRepository, IRepository
     }
 
     /**
+     * Сортировка меню по ключам сортировки страниц
      * @param string $menuName
      * @return void
      */

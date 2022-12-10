@@ -28,11 +28,11 @@ class MenuRemover implements IMenuRemover
     }
 
     /**
-     * @param IMenuDirectory|IMenuItem $item
+     * @param IMenuDirectory $item
      * @param IPage ...$pages
      * @return void
      */
-    protected function removeRecursive(IMenuDirectory|IMenuItem $item, IPage ...$pages): void
+    protected function removeRecursive(IMenuDirectory $item, IPage ...$pages): void
     {
         foreach ($item->getItems() as $current) {
             if (MenuService::isDir($current)) {

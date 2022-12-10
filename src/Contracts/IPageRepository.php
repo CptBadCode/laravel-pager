@@ -2,7 +2,7 @@
 
 namespace Cptbadcode\LaravelPager\Contracts;
 
-interface IPageRepository
+interface IPageRepository extends IRepository
 {
     public function addPage(string $className): bool;
     public function addPages(array $pages): void;

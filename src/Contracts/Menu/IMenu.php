@@ -3,8 +3,9 @@
 namespace Cptbadcode\LaravelPager\Contracts\Menu;
 
 use Cptbadcode\LaravelPager\Contracts\IPage;
+use Cptbadcode\LaravelPager\Contracts\ResponsableArr;
 
-interface IMenu
+interface IMenu extends ResponsableArr
 {
     public function getItems(): array;
     public function find(string $key): IMenuDirectory|IMenuItem|null;

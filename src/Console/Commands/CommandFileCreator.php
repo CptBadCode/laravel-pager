@@ -66,12 +66,22 @@ trait CommandFileCreator
         ));
         $className = array_pop($classNamePart);
         return [
-            'NAMESPACE'         => implode(DIRECTORY_SEPARATOR, array_merge([$this->fileNamespace], $classNamePart)),
+            'NAMESPACE'         => implode(DIRECTORY_SEPARATOR, array_merge([$this->getFileNamespace()], $classNamePart)),
             'CLASS_NAME'        => $className,
             'KEY'               => Str::snake($className),
             'TITLE'             => $this->option('title') ?? $className
         ];
     }
+
+    public function getFileNamespace(): string
+    {
+        return Str::replace(
+            '/',
+            DIRECTORY_SEPARATOR,
+            $this->option('base_dir') ?? $this->fileNamespace
+        );
+    }
+
 
     /**
      * Get the stub path and the stub variables
@@ -112,7 +122,7 @@ trait CommandFileCreator
      */
     public function getSourceFilePath(): string
     {
-        return base_path($this->fileNamespace) .
+        return base_path($this->getFileNamespace()) .
                DIRECTORY_SEPARATOR .
                $this->getSingularClassName($this->argument('name')) .
                $this->prefix . '.php';
