@@ -84,6 +84,27 @@ class MenuRepositoryTest extends PageTestCase
         MenuService::repository()->addOrUpdate('test', $menu);
 
         $this->assertEquals($menu, MenuService::repository()->find('test'));
+
+        $newMenu = new Menu([
+            new MenuItem(
+                title: 'test_title_7',
+                uri: '/',
+                key: 'second_home_page',
+                isDisabled: false,
+                sortKey: 0
+            ),
+            new MenuItem(
+                title: 'test_title_3',
+                uri: '/',
+                key: 'about_page',
+                isDisabled: false,
+                sortKey: 0
+            )
+        ]);
+        MenuService::repository()->addOrUpdate('test', $newMenu);
+
+        $this->assertEquals($newMenu, MenuService::repository()->find('test'));
+
         $this->assertArrayHasKey('test', MenuService::repository()->getAll());
     }
 
